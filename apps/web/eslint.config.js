@@ -1,4 +1,9 @@
-import { nextJsConfig } from "@repo/eslint-config/next-js";
+import mantine from 'eslint-config-mantine';
+import tseslint from 'typescript-eslint';
+import pluginQuery from "@tanstack/eslint-plugin-query";
 
-/** @type {import("eslint").Linter.Config} */
-export default nextJsConfig;
+export default tseslint.config(
+    ...pluginQuery.configs['flat/recommended'],
+    ...mantine,
+    { ignores: ['**/*.{mjs,cjs,js,d.ts,d.mts}', './.storybook/main.ts'] },
+);

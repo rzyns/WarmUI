@@ -1,5 +1,5 @@
 {
-  "name": "WarmUI",
+  "name": "warmui",
   "private": true,
   "scripts": {
     "build": "turbo run build",
@@ -13,7 +13,7 @@
     "turbo": "^2.4.4",
     "typescript": "5.7.3"
   },
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "pnpm@10.5.2",
   "engines": {
     "node": ">=18"
   }

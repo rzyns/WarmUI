@@ -3,5 +3,7 @@
     {
       "mode": "auto"
     }
-  ]
+  ],
+  // "turbo.path": "E:/Projects/WarmUI/node_modules/turbo/bin/turbo",
+  // "turbo.useLocalTurbo": true
 }
