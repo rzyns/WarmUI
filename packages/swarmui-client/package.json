@@ -1,0 +1,21 @@
+{
+    "name": "@rzyns/swarmui-client",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "build": "tsc",
+        "test": "vitest --run",
+        "lint": "echo 'Add lint script here'"
+    },
+    "dependencies": {},
+    "peerDependencies": {
+        "zod": "^3.24.2"
+    },
+    "devDependencies": {
+        "@repo/eslint-config": "workspace:*",
+        "@repo/typescript-config": "workspace:*",
+        "fast-check": "^3.23.2",
+        "vitest": "^3.0.2",
+        "zod": "^3.24.2"
+    }
+}
