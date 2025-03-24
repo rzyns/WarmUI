@@ -1,8 +1,8 @@
 import { describe } from "vitest";
-import { ServerId, Session, SessionId } from "./model/Session";
-import { SwarmUIClient } from "./SwarmUIClient";
-import { UserId } from "./model/User";
-import { ModelType } from "./model/ModelType";
+import { ServerId, Session, SessionId } from "./model/Session.js";
+import { SwarmUIClient } from "./SwarmUIClient.js";
+import { UserId } from "./model/User.js";
+import { ModelType } from "./model/ModelType.js";
 
 describe("Session", () => {
     describe("basics", (test) => {
@@ -22,7 +22,7 @@ describe("Session", () => {
         });
     });
 
-    describe("describe model", async (test) => {
+    describe("models", async (test) => {
         test("describe model", async ({ expect }) => {
             const client = new SwarmUIClient();
             await client.getNewSession();
@@ -52,6 +52,27 @@ describe("Session", () => {
                         local: true,
                         special_format: ''
                     }
+                }
+            });
+        });
+
+        test("list models", async ({ expect }) => {
+            const client = new SwarmUIClient();
+            await client.getNewSession();
+
+            expect(client.session?.session_id).toMatch(/^[0-9a-f]+$/i);
+
+            const result = await client.listModels({
+                depth: 1,
+                path: "/",
+                subtype: ModelType.enum.StableDiffusion,
+            });
+
+            expect(result).toMatchObject({
+                success: true,
+                result: {
+                    folders: expect.any(Array),
+                    files: expect.any(Array),
                 }
             });
         });

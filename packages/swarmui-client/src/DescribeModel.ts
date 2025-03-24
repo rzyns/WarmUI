@@ -1,21 +1,21 @@
 
 import * as z from "zod";
-import { Endpoint } from "./model/HttpRequest";
-import { Model, ModelName } from "./model/Model";
-import { SessionId } from "./model/Session";
-import { ModelType } from "./model/ModelType";
+import { endpoint } from "./model/HttpRequest.js";
+import { Model, ModelName } from "./model/Model.js";
+import { SessionId } from "./model/Session.js";
+import { ModelType } from "./model/ModelType.js";
 
-export const DescribeModelRequest = z.object({
+export const Request = z.object({
     session_id: SessionId,
     modelName: ModelName,
     subType: ModelType,
 });
-export type DescribeModelRequestInput = z.input<typeof DescribeModelRequest>;
-export type DescribeModelRequest = z.output<typeof DescribeModelRequest>;
+export type RequestInput = z.input<typeof Request>;
+export type Request = z.output<typeof Request>;
 
-export const DescribeModelResponse = z.object({
+export const Response = z.object({
     model: Model,
 }).passthrough();
-export type DescribeModelResponse = z.output<typeof DescribeModelResponse>;
+export type Response = z.output<typeof Response>;
 
-export const DescribeModelEndpoint = Endpoint("DescribeModel" as const, DescribeModelRequest, DescribeModelResponse);
+export const Endpoint = endpoint("DescribeModel" as const, Request, Response);

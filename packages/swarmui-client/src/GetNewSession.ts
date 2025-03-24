@@ -1,10 +1,10 @@
 import * as z from "zod";
-import { Session } from "./model/Session";
-import { Endpoint, HttpResponse } from "./model/HttpRequest";
+import { Session } from "./model/Session.js";
+import { endpoint } from "./model/HttpRequest.js";
 
-export const GetNewSessionRequest = z.object({});
+export const Request = z.object({});
 
-export const GetNewSessionResponse = Session;
-export type GetNewSessionResponse = z.output<typeof GetNewSessionResponse>;
+export const Response = Session;
+export type Response = z.output<typeof Response>;
 
-export const GetNewSessionEndpoint = Endpoint("GetNewSession" as const, GetNewSessionRequest, GetNewSessionResponse);
+export const Endpoint = endpoint("GetNewSession" as const, Request, Response);

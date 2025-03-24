@@ -2,12 +2,16 @@
     "name": "@rzyns/swarmui-client",
     "version": "0.0.0",
     "private": true,
+    "type": "module",
+    "exports": {
+        "./*.js": "./dist/*.js"
+        
+    },
     "scripts": {
-        "build": "tsc",
+        "build": "vite build",
         "test": "vitest --run",
         "lint": "echo 'Add lint script here'"
     },
-    "dependencies": {},
     "peerDependencies": {
         "zod": "^3.24.2"
     },
@@ -15,6 +19,9 @@
         "@repo/eslint-config": "workspace:*",
         "@repo/typescript-config": "workspace:*",
         "fast-check": "^3.23.2",
+        "vite": "^6.0.7",
+        "vite-plugin-dts": "^4.5.3",
+        "vite-plugin-no-bundle": "^4.0.0",
         "vitest": "^3.0.2",
         "zod": "^3.24.2"
     }

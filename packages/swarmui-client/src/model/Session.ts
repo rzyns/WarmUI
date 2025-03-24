@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { UserId } from "./User";
+import { UserId } from "./User.js";
 
 export const SessionId = z.string().brand("SessionId");
 export type SessionId = z.output<typeof SessionId>;

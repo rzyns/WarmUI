@@ -1,9 +1,9 @@
 import * as z from "zod";
-import { GetNewSessionEndpoint } from "./GetNewSession";
-import { ListModelsEndpoint, ListModelsRequestInput } from "./ListModels";
-import { Endpoint, HttpResponse, invoke } from "./model/HttpRequest";
-import { Session } from "./model/Session";
-import { DescribeModelEndpoint, DescribeModelRequestInput } from "./DescribeModel";
+import * as session from "./GetNewSession.js";
+import * as listModels from "./ListModels.js";
+import { Endpoint, endpoint, HttpResponse, invoke } from "./model/HttpRequest.js";
+import { Session } from "./model/Session.js";
+import * as describeModel from "./DescribeModel.js";
 import * as assert from "node:assert";
 
 export class SessionNotInitializedError extends Error {
@@ -28,7 +28,7 @@ export class SwarmUIClient {
     }
 
     public async getNewSession(): Promise<Session> {
-        const result = await invoke(GetNewSessionEndpoint, {});
+        const result = await invoke(session.Endpoint, {});
 
         if (!result.success) {
             throw new Error("Failed to get new session");
@@ -38,11 +38,11 @@ export class SwarmUIClient {
         return result.result;
     }
 
-    public async listModels(input: OmitSessionId<ListModelsRequestInput>) {
-        return this.doRequest(ListModelsEndpoint, input);
+    public async listModels(input: OmitSessionId<listModels.RequestInput>) {
+        return this.doRequest(listModels.Endpoint, input);
     }
 
-    public async describeModel(input: OmitSessionId<DescribeModelRequestInput>) {
-        return this.doRequest(DescribeModelEndpoint, input);
+    public async describeModel(input: OmitSessionId<describeModel.RequestInput>) {
+        return this.doRequest(describeModel.Endpoint, input);
     }
 }

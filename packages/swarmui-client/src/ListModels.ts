@@ -1,27 +1,32 @@
 import * as z from "zod";
-import { Endpoint } from "./model/HttpRequest";
-import { Model } from "./model/Model";
-import { SessionId } from "./model/Session";
-import { ModelFile } from "./model/ModelFile";
+import { endpoint } from "./model/HttpRequest.js";
+import { Model, SortType } from "./model/Model.js";
+import { SessionId } from "./model/Session.js";
+import { ModelFile } from "./model/ModelFile.js";
+import { ModelType } from "./model/ModelType.js";
 
-export const ListModelsRequest = z.object({
+export const Request = z.object({
     session_id: SessionId,
     // path	String	What folder path to search within. Use empty string for root.	(REQUIRED)
     path: z.string(),
     // depth	Int32	Maximum depth (number of recursive folders) to search.	(REQUIRED)
     depth: z.number().int(),
     // subtype	String	Model sub-type - LoRA, Wildcards, etc.	Stable-Diffusion
+    subtype: ModelType,
     // sortBy	String	What to sort the list by - Name, DateCreated, or `DateModified.	Name
+    sortBy: SortType.default(SortType.enum.NAME),
     // allowRemote	Boolean	If true, allow remote models. If false, only local models.	True
+    allowRemote: z.boolean().default(true),
     // sortReverse	Boolean	If true, the sorting should be done in reverse.	False
+    sortReverse: z.boolean().default(false),
 });
-export type ListModelsRequestInput = z.input<typeof ListModelsRequest>;
-export type ListModelsRequest = z.output<typeof ListModelsRequest>;
+export type RequestInput = z.input<typeof Request>;
+export type Request = z.output<typeof Request>;
 
-export const ListModelsResponse = z.object({
+export const Response = z.object({
     folders: z.array(z.string()),
     files: z.array(ModelFile),
 }).passthrough();
-export type ListModelsResponse = z.output<typeof ListModelsResponse>;
+export type Response = z.output<typeof Response>;
 
-export const ListModelsEndpoint = Endpoint("ListModels" as const, ListModelsRequest, ListModelsResponse);
+export const Endpoint = endpoint("ListModels" as const, Request, Response);

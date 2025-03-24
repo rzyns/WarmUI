@@ -1,8 +1,14 @@
 {
     "extends": "@repo/typescript-config/base.json",
     "compilerOptions": {
+        "module": "ESNext",
+        "moduleResolution": "bundler",
         "exactOptionalPropertyTypes": true,
         "useUnknownInCatchVariables": true,
         "noErrorTruncation": true,
+        "noEmit": false,
+        "outDir": "dist",
+        "rootDir": "src",
     },
+    "include": ["src"]
 }

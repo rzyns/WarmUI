@@ -28,7 +28,7 @@ export type Endpoint<N extends string, T extends z.ZodType, U extends z.ZodType>
     output: U;
 };
 
-export function Endpoint<N extends string, T extends z.ZodTypeAny, U extends z.ZodTypeAny>(name: N, input: T, output: U): Endpoint<N, T, U> {
+export function endpoint<N extends string, T extends z.ZodTypeAny, U extends z.ZodTypeAny>(name: N, input: T, output: U): Endpoint<N, T, U> {
     return { name, input, output };
 }
 
