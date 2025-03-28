@@ -1,0 +1,11 @@
+[tools]
+bun = "latest"
+node = "latest"
+pnpm = "latest"
+
+[env]
+NODE_ENV = "development"
+EDITOR = "code --wait"
+
+mise.file = ".env"
+mise.path = "{{config_root}}/node_modules/.bin"

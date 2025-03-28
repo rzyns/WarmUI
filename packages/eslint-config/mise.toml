@@ -1,0 +1,2 @@
+[env]
+mise.path = "{{config_root}}/node_modules/.bin"

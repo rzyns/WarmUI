@@ -1,0 +1,15 @@
+{
+    "projectName": "Educe",
+    "languages": [{
+        "id": "educe",
+        "grammar": "src/language/educe.langium",
+        "fileExtensions": [".ed", ".educe", ".prompt"],
+        "textMate": {
+            "out": "syntaxes/educe.tmLanguage.json"
+        },
+        "monarch": {
+            "out": "src/syntaxes/educe.monarch.ts"
+        }
+    }],
+    "out": "src/language/generated"
+}

@@ -17,10 +17,10 @@ export enum SortTypeEnum {
 export const SortType = z.nativeEnum(SortTypeEnum);
 export type SortType = z.output<typeof SortType>;
 
-export const Model = z.object({
+export const RawModel = z.object({
     // id: ModelId,
     // type: ModelType,
-    name: ModelName,
+    name: z.string(),
     title: z.string(),
     author: z.string(),
     description: z.string(),
@@ -41,4 +41,31 @@ export const Model = z.object({
     is_negative_embedding: z.boolean(),
     local: z.boolean(),
 }).passthrough();
-export interface Model extends z.output<typeof Model> {}
+export interface RawModel extends z.output<typeof RawModel> {}
+
+export const FullyQualifiedModel = RawModel.extend({
+    name: ModelName,
+    id: ModelId,
+    type: ModelType,
+    license: z.string(),
+    trigger_phrase: z.string(),
+    merged_from: z.string(),
+});
+export type FullyQualifiedModel = z.output<typeof FullyQualifiedModel>;
+
+export const Model = RawModel.transform((input) => ({
+    ...input,
+    name: input.name as ModelName,
+    id: input.id as ModelId,
+    type: ModelType.enum.LoRA,
+    license: "",
+    trigger_phrase: "",
+    merged_from: "",
+} satisfies FullyQualifiedModel));
+export type ModelInput = z.input<typeof Model>;
+export type Model = z.output<typeof Model>;
+
+let _modelInput: ModelInput = {} as any;
+let _rawModel: RawModel = {} as any;
+_modelInput = _rawModel;
+_rawModel = _modelInput;
