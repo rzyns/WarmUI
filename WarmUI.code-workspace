@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{ "path": ".", "name": "root" },
+		{ "path": "packages/eslint-config" },
+		{ "path": "packages/swarmui-client" },
+		{ "path": "packages/typescript-config" },
+		{ "path": "packages/educe" },
+		{ "path": "packages/ui" },
+		{ "path": "apps/docs" },
+		{ "path": "apps/web" },
+	],
+	"settings": {
+	}
+}
