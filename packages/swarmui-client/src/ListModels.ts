@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { endpoint } from "./model/HttpRequest.js";
-import { Model, SortType } from "./model/Model.js";
+import { Model, RawModel, SortType } from "./model/Model.js";
 import { SessionId } from "./model/Session.js";
 import { ModelFile } from "./model/ModelFile.js";
 import { ModelType } from "./model/ModelType.js";
@@ -25,7 +25,14 @@ export type Request = z.output<typeof Request>;
 
 export const Response = z.object({
     folders: z.array(z.string()),
-    files: z.array(ModelFile),
+    files: z.array(RawModel).transform((a): Array<Model> => a.flatMap((model) => {
+        const result = Model.safeParse(model);
+        if (result.success) {
+            return [result.data] as const;
+        } else {
+            return [];
+        }
+    })),
 }).passthrough();
 export type Response = z.output<typeof Response>;
 

@@ -3,6 +3,10 @@ import { ServerId, Session, SessionId } from "./model/Session.js";
 import { SwarmUIClient } from "./SwarmUIClient.js";
 import { UserId } from "./model/User.js";
 import { ModelType } from "./model/ModelType.js";
+import { Model, RawModel } from "./model/Model.js";
+import { UTCDate } from "@date-fns/utc";
+import { format } from "date-fns";
+import { tz, TZDate } from "@date-fns/tz";
 
 describe("Session", () => {
     describe("basics", (test) => {
@@ -30,7 +34,7 @@ describe("Session", () => {
             expect(client.session?.session_id).toMatch(/^[0-9a-f]+$/i);
 
             const result = await client.describeModel({
-                modelName: "v1-5-pruned-emaonly-fp16",
+                modelName: "il/smoothMixNoobai_noobai.safetensors",
                 subType: ModelType.enum.StableDiffusion,
             });
 
@@ -38,19 +42,19 @@ describe("Session", () => {
                 success: true,
                 result: {
                     model: {
-                        name: 'v1-5-pruned-emaonly-fp16.safetensors',
-                        title: 'Stable Diffusion v1.5',
-                        architecture: 'stable-diffusion-v1',
-                        class: 'Stable Diffusion v1',
-                        compat_class: 'stable-diffusion-v1',
-                        resolution: '512x512',
-                        standard_width: 512,
-                        standard_height: 512,
-                        license: 'CreativeML Open RAIL-M',
-                        is_supported_model_format: true,
+                        architecture: 'stable-diffusion-xl-v1-base',
+                        class: 'Stable Diffusion XL 1.0-Base',
+                        compat_class: 'stable-diffusion-xl-v1',
                         is_negative_embedding: false,
+                        is_supported_model_format: true,
+                        license: null,
                         local: true,
-                        special_format: ''
+                        name: 'il/smoothMixNoobai_noobai.safetensors',
+                        resolution: '1024x1024',
+                        special_format: '',
+                        standard_height: 1024,
+                        standard_width: 1024,
+                        title: 'Smooth Mix - (NoobAI/Illustrious/Pony) - NoobAI',
                     }
                 }
             });
@@ -63,9 +67,9 @@ describe("Session", () => {
             expect(client.session?.session_id).toMatch(/^[0-9a-f]+$/i);
 
             const result = await client.listModels({
-                depth: 1,
+                depth: 100,
                 path: "/",
-                subtype: ModelType.enum.StableDiffusion,
+                subtype: ModelType.enum.LoRA,
             });
 
             expect(result).toMatchObject({
@@ -77,4 +81,40 @@ describe("Session", () => {
             });
         });
     });
+});
+
+describe("parsing/transform", (test) => {
+    test("transform input model type to FullyQualifiedModel", async ({ expect }) => {
+        const input: RawModel = {
+            architecture: "architecture",
+            author: "some author",
+            class: "this is the class",
+            compat_class: "this is the compat_class",
+            date: format(new TZDate("2025/03/19 13:11:29", "America/New_York"), "yyyy/MM/dd HH:mm:ss", { in: tz(Intl.DateTimeFormat().resolvedOptions().timeZone) }),
+            description: "some description goes here",
+            hash_256: "something",
+            is_negative_embedding: false,
+            is_supported_model_format: true,
+            loaded: false,
+            local: false,
+            name: "this is the name of the model",
+            preview_image: "nothing to see here",
+            standard_height: 1280,
+            standard_width: 1920,
+            tags: ["some", "tags", "would", "be", "here"],
+            title: "A Title",
+            usage_hint: "some usage hint",
+            license: "some license",
+            merged_from: "some model",
+            trigger_phrase: "some trigger phrase",
+        };
+
+        const result = Model.parse(input);
+
+        expect(result.date).toBeInstanceOf(UTCDate);
+        expect(result.date.toISOString()).toStrictEqual("2025-03-19T17:11:29.000Z");
+
+        expect(result.id).toStrictEqual("something");
+    });
+
 });
