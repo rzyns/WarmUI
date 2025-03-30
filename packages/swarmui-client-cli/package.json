@@ -1,5 +1,5 @@
 {
-  "name": "swarmui-client-cli",
+  "name": "@rzyns/swarmui-client-cli",
   "version": "0.0.1",
   "type": "module",
   "scripts": {

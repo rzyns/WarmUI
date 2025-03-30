@@ -1,4 +1,9 @@
 import * as cmd from "cmd-ts";
+import { ModelType } from "@rzyns/swarmui-client/model/ModelType.js";
+import { SwarmUIClient } from "@rzyns/swarmui-client/SwarmUIClient.js"
+import * as fs from "node:fs";
+
+import type { Response as ListModelsResponse } from "@rzyns/swarmui-client/ListModels.js"
 
 export const SwarmUiClientCommand = cmd.subcommands({
     name: "swarmui-client",
@@ -25,11 +30,74 @@ export const SwarmUiClientCommand = cmd.subcommands({
                 }),
             }
         }),
+        "dump-models": cmd.command({
+            name: "dump-models",
+            description: "",
+            args: {
+                type: cmd.multioption({
+                    long: "type",
+                    type: cmd.array(cmd.extendType(cmd.string, async (input) => {
+                        const value = Object.keys(ModelType.enum).find(
+                            (k) => k.toLowerCase() === input.toLowerCase(),
+                        ) as ModelType | undefined;
+
+                        if (!value) {
+                            throw new Error(`Invalid model type: ${input}`);
+                        }
+
+                        return value;
+                    })),
+                    defaultValue: () => [],
+                    description: "",
+                    short: "t",
+                }),
+                output: cmd.option({
+                    long: "output",
+                    type: cmd.optional(cmd.string),
+                    description: "output file",
+                    short: "o",
+                }),
+            },
+            handler: async ({ type, output }) => {
+                const client = new SwarmUIClient();
+                await client.getNewSession();
+
+                const types = type.length ? type : Object.keys(ModelType.enum).map((k) => ModelType.enum[k] as ModelType);
+
+                const results = await Promise.allSettled(types.map(async (type) => 
+                    [type, await client.listModels({
+                        depth: 100,
+                        path: "/",
+                        subtype: type,
+                    })] as const,
+                ));
+
+
+                const data: { [K in ModelType]?: ListModelsResponse } = {};
+
+                for (const result of results) {
+                    if (result.status === "fulfilled") {
+                        const [type, value] = result.value;
+                        if (value.success) {
+                            data[type] = value.result;
+                        } else {
+                            console.error(`Error fetching models for type ${type}: ${value.error}`);
+                        }
+                    } else {
+                        console.error(result.reason);
+                    }
+                }
+
+                if (output) {
+                    await fs.promises.writeFile(output, JSON.stringify(data, null, 4));
+                } else {
+                    console.dir(data, { depth: null });
+                }
+            },
+        }),
     },
 });
 
 export default SwarmUiClientCommand;
 
-if (import.meta.url === `file://${process.argv[1]}`) {
-    cmd.run(SwarmUiClientCommand, process.argv.slice(2));
-}
+cmd.run(SwarmUiClientCommand, process.argv.slice(2));
