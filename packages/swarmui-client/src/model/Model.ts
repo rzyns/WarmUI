@@ -45,15 +45,15 @@ export const RawModel = z.object({
     is_negative_embedding: z.boolean(),
     local: z.boolean(),
 
-    license: z.string().optional(),
-    trigger_phrase: z.string().optional(),
-    merged_from: z.string().optional(),
+    license: z.string().optional().nullable(),
+    trigger_phrase: z.string().optional().nullable(),
+    merged_from: z.string().optional().nullable(),
 
-    hash: z.string().optional(),
-    hash_256: z.string().optional(),
+    hash: z.string().optional().nullable(),
+    hash_256: z.string().optional().nullable(),
 
-    time_created: z.number().optional(),
-    time_modified: z.number().optional(),
+    time_created: z.number().optional().nullable(),
+    time_modified: z.number().optional().nullable(),
 }).passthrough();
 export interface RawModel extends z.output<typeof RawModel> {}
 
