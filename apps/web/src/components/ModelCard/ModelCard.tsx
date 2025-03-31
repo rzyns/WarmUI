@@ -1,9 +1,9 @@
 import { Card, CardProps, Code, Container, Grid, Image, Pill, PillGroup, Popover, ScrollArea, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { Model } from "@rzyns/swarmui-client/model/Model.js";
+import * as swarmui from "@rzyns/swarmui-client";
 
 export type ModelCardProps = CardProps & {
-    model: Model,
+    model: swarmui.model.Model,
 };
 
 export function ModelCard(props: ModelCardProps) {
@@ -34,7 +34,7 @@ export function ModelCard(props: ModelCardProps) {
                 </Grid.Col>
                 <Grid.Col span={2}>
                     <ScrollArea.Autosize mah={670} overscrollBehavior="contain auto">
-                        <Text mt="sm" c="dimmed" size="sm" dangerouslySetInnerHTML={{ __html: props.model.description }} />
+                        <Text mt="sm" c="dimmed" size="sm" dangerouslySetInnerHTML={{ __html: props.model.description ?? "" }} />
                     </ScrollArea.Autosize>
                 </Grid.Col>
             </Grid>

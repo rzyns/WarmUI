@@ -1,62 +1,65 @@
-import { Model, RawModel } from "@rzyns/swarmui-client/model/Model.js";
+import * as swarmui from "@rzyns/swarmui-client";
 import {
     type MRT_SortingState,
     type MRT_RowVirtualizer,
     useMantineReactTable,
-    MantineReactTable,
     MRT_ColumnDef,
     MRT_GlobalFilterTextInput,
     MRT_TablePagination,
-    flexRender,
-    MRT_TableBodyCellValue,
     MRT_ToolbarAlertBanner,
-    MRT_TableInstance,
-    MRT_RowSelectionState,
-    getMRT_RowSelectionHandler,
 } from "mantine-react-table";
 import { useEffect, useRef, useState } from "react";
-import { SwarmUIClient } from "@rzyns/swarmui-client/SwarmUIClient.js";
-import { ModelType } from "@rzyns/swarmui-client/model/ModelType.js";
-import { Container, Divider, Flex, Grid, Stack, TagsInput, Title } from "@mantine/core";
+import { Divider, Flex, Grid, Stack, TagsInput, Title } from "@mantine/core";
 import { ModelCard } from "../ModelCard/ModelCard";
-import { useAtomState } from "@zedux/react";
-import { selectedModelAtom } from "@/atoms";
+import { useAtomInstance, useAtomState, useAtomValue } from "@zedux/react";
+import { selectedModelAtom, tableStateAtom } from "@/atoms";
 
 export function ModelLibrary() {
     const rowVirtualizerInstanceRef = useRef<MRT_RowVirtualizer>(null);
-    const [data, setData] = useState<Model[]>([]);
+    const [data, setData] = useState<swarmui.model.Model[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [sorting, setSorting] = useState<MRT_SortingState>([]);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
-    const [selectedModel, setSelectedModel] = useAtomState(selectedModelAtom);
 
-    const columns = Object.keys(RawModel.shape).map((field) => ({
+    const tableStateApi = useAtomInstance(tableStateAtom).exports;
+    const tableState = useAtomValue(tableStateAtom);
+
+    const columns = Object.keys(swarmui.model.Raw.shape).map((field) => ({
         accessorKey: field,
         header: field,
         size: 150,
-    } satisfies MRT_ColumnDef<Model>));
+    } satisfies MRT_ColumnDef<swarmui.model.Model>));
 
     useEffect(() => {
         try {
             //scroll to the top of the table when the sorting changes
             // rowVirtualizerInstanceRef.current?.scrollToIndex(0);
         } catch (e) {
+            // eslint-disable-next-line no-console
             console.log(e);
         }
     }, [sorting]);
 
     useEffect(() => {
         const fetchData = async () => {
-            const client = new SwarmUIClient();
+            const client = new swarmui.SwarmUIClient();
 
             setIsLoading(true);
 
             await client.getNewSession();
 
-            const models = await client.listModels({ depth: 1, path: "/il/00 other", subtype: ModelType.enum.LoRA });
+            const models = await client.listModels({ depth: 1, path: "/il/00 other", subtype: swarmui.model.ModelType.enum.LoRA });
 
             if (models.success) {
-                setData(models.result.files);
+                setData(models.result.files.flatMap((file) => {
+                    const model = swarmui.model.Model.safeParse(file);
+
+                    if (model.success) {
+                        return [model.data];
+                    }
+
+                    return [];
+                }));
             }
         };
 
@@ -82,9 +85,7 @@ export function ModelLibrary() {
         // enableRowNumbers: true,
         enableRowVirtualization: true,
         // mantineTableContainerProps: {},
-        onSortingChange: setSorting,
-        onRowSelectionChange: setSelectedModel,
-        state: { isLoading, sorting, rowSelection: selectedModel },
+        state: tableState,
         rowVirtualizerInstanceRef,
         rowVirtualizerOptions: { overscan: 5 },
         // columnVirtualizerOptions: { overscan: 2 },

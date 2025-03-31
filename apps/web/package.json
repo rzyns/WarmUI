@@ -28,6 +28,8 @@
         "@zedux/react": "^1.3.4",
         "clsx": "^2.1.1",
         "dayjs": "^1.11.13",
+        "idb-ts": "^3.2.0",
+        "idbsql": "^0.0.1",
         "mantine-react-table": "2.0.0-beta.9",
         "monaco-editor": "^0.52.2",
         "monaco-vim": "^0.4.2",

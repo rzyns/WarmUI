@@ -1,12 +1,12 @@
 import { Container } from "@mantine/core";
 import { ModelCard } from "./ModelCard";
-import { Model } from "@rzyns/swarmui-client/model/Model.js";
+import * as swarmui from "@rzyns/swarmui-client";
 
 export default {
     title: "ModelCard",
 };
 
-const data = Model.parse({
+const data = swarmui.model.Model.parse({
     "name": "il/2d/fifthMixIllustrious_bananaDaiquiri.safetensors",
     "title": "Fifth Mix [Illustrious] - Banana Daiquiri",
     "author": "LS582",
