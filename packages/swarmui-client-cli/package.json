@@ -2,13 +2,15 @@
   "name": "@rzyns/swarmui-client-cli",
   "version": "0.0.1",
   "type": "module",
+  "bin": "./dist/index.js",
   "scripts": {
     "dev": "echo 'Add dev script here'",
-    "build": "echo 'Add build script here'",
+    "build": "ncc --source-map --target es2022 --no-cache --transpile-only --out dist build src/bin/cli.ts",
     "test": "echo 'Add test script here'",
     "lint": "echo 'Add lint script here'"
   },
   "devDependencies": {
+    "@repo/typescript-config": "workspace:^",
     "@rzyns/swarmui-client": "workspace:^",
     "@vercel/ncc": "^0.38.3",
     "cmd-ts": "^0.13.0",

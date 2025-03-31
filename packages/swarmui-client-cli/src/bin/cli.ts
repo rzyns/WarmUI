@@ -1,9 +1,6 @@
 import * as cmd from "cmd-ts";
-import { ModelType } from "@rzyns/swarmui-client/model/ModelType.js";
-import { SwarmUIClient } from "@rzyns/swarmui-client/SwarmUIClient.js"
+import * as swarmui from "@rzyns/swarmui-client";
 import * as fs from "node:fs";
-
-import type { Response as ListModelsResponse } from "@rzyns/swarmui-client/ListModels.js"
 
 export const SwarmUiClientCommand = cmd.subcommands({
     name: "swarmui-client",
@@ -37,9 +34,9 @@ export const SwarmUiClientCommand = cmd.subcommands({
                 type: cmd.multioption({
                     long: "type",
                     type: cmd.array(cmd.extendType(cmd.string, async (input) => {
-                        const value = Object.keys(ModelType.enum).find(
+                        const value = Object.keys(swarmui.model.ModelType.enum).find(
                             (k) => k.toLowerCase() === input.toLowerCase(),
-                        ) as ModelType | undefined;
+                        ) as swarmui.model.ModelType | undefined;
 
                         if (!value) {
                             throw new Error(`Invalid model type: ${input}`);
@@ -59,10 +56,10 @@ export const SwarmUiClientCommand = cmd.subcommands({
                 }),
             },
             handler: async ({ type, output }) => {
-                const client = new SwarmUIClient();
+                const client = new swarmui.SwarmUIClient();
                 await client.getNewSession();
 
-                const types = type.length ? type : Object.keys(ModelType.enum).map((k) => ModelType.enum[k] as ModelType);
+                const types = type.length ? type : Object.keys(swarmui.model.ModelType.enum).map((k) => swarmui.model.ModelType.parse(k));
 
                 const results = await Promise.allSettled(types.map(async (type) => 
                     [type, await client.listModels({
@@ -73,7 +70,7 @@ export const SwarmUiClientCommand = cmd.subcommands({
                 ));
 
 
-                const data: { [K in ModelType]?: ListModelsResponse } = {};
+                const data: { [K in swarmui.model.ModelType]?: swarmui.endpoint.ListModels.Response } = {};
 
                 for (const result of results) {
                     if (result.status === "fulfilled") {
