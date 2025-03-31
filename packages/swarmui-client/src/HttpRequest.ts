@@ -79,7 +79,12 @@ export async function invoke<
             try {
                 const data = JSON.parse(d);
                 if (typeof data === "object" && data !== null && !("success" in data)) {
-                    return { success: true, result: data };
+                    const parsed = endpoint.output.safeParse(data);
+                    if (parsed.success) {
+                        return { success: true, result: parsed.data };
+                    } else {
+                        return new ParseError(`${endpoint.name} (Output) parse Error`, { cause: { error: parsed.error, input: data } });
+                    }
                 } else {
                     return data;
                 }

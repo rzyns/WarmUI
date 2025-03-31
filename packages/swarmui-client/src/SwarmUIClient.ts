@@ -1,10 +1,9 @@
 import * as z from "zod";
-import * as session from "./GetNewSession.js";
-import * as listModels from "./ListModels.js";
-import { Endpoint, endpoint, HttpResponse, invoke } from "./model/HttpRequest.js";
+import * as session from "./endpoint/GetNewSession.js";
+import * as listModels from "./endpoint/ListModels.js";
+import { Endpoint, endpoint, HttpResponse, invoke } from "./HttpRequest.js";
 import { Session } from "./model/Session.js";
-import * as describeModel from "./DescribeModel.js";
-import * as assert from "node:assert";
+import * as describeModel from "./endpoint/DescribeModel.js";
 
 export class SessionNotInitializedError extends Error {
     static { this.prototype.name = "SessionNotInitializedError"; }

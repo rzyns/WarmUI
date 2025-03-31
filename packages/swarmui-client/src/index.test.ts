@@ -1,12 +1,9 @@
 import { describe } from "vitest";
-import { ServerId, Session, SessionId } from "./model/Session.js";
 import { SwarmUIClient } from "./SwarmUIClient.js";
-import { UserId } from "./model/User.js";
-import { ModelType } from "./model/ModelType.js";
-import { Model, RawModel } from "./model/Model.js";
 import { UTCDate } from "@date-fns/utc";
 import { format } from "date-fns";
 import { tz, TZDate } from "@date-fns/tz";
+import * as model from "./model/index.js";
 
 describe("Session", () => {
     describe("basics", (test) => {
@@ -18,11 +15,11 @@ describe("Session", () => {
             expect(client.session).toMatchObject({
                 output_append_user: expect.any(Boolean),
                 permissions: expect.toSatisfy((a) => Array.isArray(a) && a.every((b) => typeof b === "string")),
-                server_id: expect.toSatisfy((a) => ServerId.safeParse(a).success),
-                user_id: expect.toSatisfy((a) => UserId.safeParse(a).success),
-                session_id: expect.toSatisfy((a) => SessionId.safeParse(a).success),
+                server_id: expect.toSatisfy((a) => model.ServerId.safeParse(a).success),
+                user_id: expect.toSatisfy((a) => model.UserId.safeParse(a).success),
+                session_id: expect.toSatisfy((a) => model.SessionId.safeParse(a).success),
                 version: expect.toSatisfy((a) => typeof a === "string"),
-            } satisfies Session);
+            } satisfies model.Session);
         });
     });
 
@@ -35,7 +32,7 @@ describe("Session", () => {
 
             const result = await client.describeModel({
                 modelName: "il/smoothMixNoobai_noobai.safetensors",
-                subType: ModelType.enum.StableDiffusion,
+                subType: model.ModelType.enum.StableDiffusion,
             });
 
             expect(result).toMatchObject({
@@ -69,7 +66,7 @@ describe("Session", () => {
             const result = await client.listModels({
                 depth: 100,
                 path: "/",
-                subtype: ModelType.enum.LoRA,
+                subtype: model.ModelType.enum.LoRA,
             });
 
             expect(result).toMatchObject({
@@ -85,14 +82,14 @@ describe("Session", () => {
 
 describe("parsing/transform", (test) => {
     test("transform input model type to FullyQualifiedModel", async ({ expect }) => {
-        const input: RawModel = {
+        const input: model.Raw = {
             architecture: "architecture",
             author: "some author",
             class: "this is the class",
             compat_class: "this is the compat_class",
             date: format(new TZDate("2025/03/19 13:11:29", "America/New_York"), "yyyy/MM/dd HH:mm:ss", { in: tz(Intl.DateTimeFormat().resolvedOptions().timeZone) }),
             description: "some description goes here",
-            hash_256: "something",
+            hash_sha256: "something",
             is_negative_embedding: false,
             is_supported_model_format: true,
             loaded: false,
@@ -109,12 +106,33 @@ describe("parsing/transform", (test) => {
             trigger_phrase: "some trigger phrase",
         };
 
-        const result = Model.parse(input);
+        const result = model.Model.parse(input);
 
         expect(result.date).toBeInstanceOf(UTCDate);
-        expect(result.date.toISOString()).toStrictEqual("2025-03-19T17:11:29.000Z");
+        expect(result.date?.toISOString()).toStrictEqual("2025-03-19T17:11:29.000Z");
 
         expect(result.id).toStrictEqual("something");
     });
+    describe("model", (test) => {
+        test("", async ({ expect }) => {
+            const client = new SwarmUIClient();
+            await client.getNewSession();
 
+            expect(client.session?.session_id).toMatch(/^[0-9a-f]+$/i);
+
+            const result = await client.describeModel({
+                modelName: "il/smoothMixNoobai_noobai.safetensors",
+                subType: model.ModelType.enum.StableDiffusion,
+            });
+
+            if (result.success) {
+                const modelResult = model.Model.parse(result.result.model);
+                expect(modelResult).toMatchObject({
+                    date: expect.any(UTCDate),
+                });
+            } else {
+                throw new Error("result was not successful");
+            }
+        });
+    });
 });

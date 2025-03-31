@@ -1,7 +1,7 @@
 import * as z from "zod";
-import { Model } from "./Model.js";
+import { Raw } from "./Raw.js";
 
-export const ModelFileName = z.string().brand("ModelName");
+export const ModelFileName = z.string().brand("ModelFileName");
 export type ModelFileName = z.output<typeof ModelFileName>;
 
-export const ModelFile = Model;
+export const ModelFile = Raw;

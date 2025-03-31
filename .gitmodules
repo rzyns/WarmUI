@@ -1,0 +1,3 @@
+[submodule "packages/idbsql"]
+	path = packages/idbsql
+	url = https://github.com/emekaorji/idbsql.git

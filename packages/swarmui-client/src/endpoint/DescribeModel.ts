@@ -1,9 +1,11 @@
 
 import * as z from "zod";
-import { endpoint } from "./model/HttpRequest.js";
-import { Model, ModelName } from "./model/Model.js";
-import { SessionId } from "./model/Session.js";
-import { ModelType } from "./model/ModelType.js";
+
+import { endpoint } from "../HttpRequest.js";
+import { ModelName } from "../model/ModelName.js";
+import { ModelType } from "../model/ModelType.js";
+import { Raw } from "../model/Raw.js";
+import { SessionId } from "../model/Session.js";
 
 export const Request = z.object({
     session_id: SessionId,
@@ -14,7 +16,7 @@ export type RequestInput = z.input<typeof Request>;
 export type Request = z.output<typeof Request>;
 
 export const Response = z.object({
-    model: Model,
+    model: Raw,
 }).passthrough();
 export type Response = z.output<typeof Response>;
 

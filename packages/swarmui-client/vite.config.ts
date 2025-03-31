@@ -3,10 +3,6 @@ import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import dts from "vite-plugin-dts";
 import noBundlePlugin from "vite-plugin-no-bundle";
-import * as fs from "node:fs";
-import * as path from "node:path";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
     plugins: [
@@ -20,9 +16,10 @@ export default defineConfig({
     ],
     build: {
         lib: {
-            entry: await fs.promises.readdir(path.join(__dirname, "src"), { recursive: true, withFileTypes: true }).then((files) => {
-                return files.filter((file) => file.isFile() && file.name.endsWith(".ts") && !file.name.endsWith(".d.ts")).map((file) => path.join(file.parentPath, file.name));
-            }),
+            // entry: await fs.promises.readdir(path.join(__dirname, "src"), { recursive: true, withFileTypes: true }).then((files) => {
+            //     return files.filter((file) => file.isFile() && file.name.endsWith(".ts") && !file.name.endsWith(".d.ts")).map((file) => path.join(file.parentPath, file.name));
+            // }),
+            entry: "./src/index.ts",
             formats: ["es"],
         },
         sourcemap: true,
