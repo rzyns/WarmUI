@@ -114,7 +114,7 @@ describe("parsing/transform", (test) => {
         expect(result.id).toStrictEqual("something");
     });
     describe("model", (test) => {
-        test("", async ({ expect }) => {
+        test("fully qualified model", async ({ expect }) => {
             const client = new SwarmUIClient();
             await client.getNewSession();
 

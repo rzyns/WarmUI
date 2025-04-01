@@ -11,26 +11,25 @@
     },
     "dependencies": {
         "@date-fns/tz": "^1.2.0",
+        "@electric-sql/pglite": "^0.2.17",
         "@rzyns/swarmui-client": "workspace:*",
         "date-fns": "^4.1.0",
-        "drizzle-orm": "^0.41.0",
-        "idbsql": "workspace:*",
-        "sql.js": "^1.13.0"
+        "drizzle-orm": "^0.41.0"
     },
     "devDependencies": {
         "@repo/eslint-config": "workspace:*",
         "@repo/typescript-config": "workspace:*",
         "@rzyns/swarmui-client-cli": "workspace:*",
         "@testing-library/dom": "^10.4.0",
+        "@types/sql.js": "^1.4.9",
         "@vitest/browser": "^3.0.9",
+        "drizzle-kit": "^0.30.6",
         "playwright": "^1.51.1",
+        "tsx": "^4.19.3",
         "vite": "^6.2.3",
         "vite-plugin-dts": "^4.5.3",
         "vite-plugin-no-bundle": "^4.0.0",
+        "vite-plugin-wasm": "^3.4.1",
         "vitest": "^3.0.9"
-    },
-    "peerDependencies": {
-        "drizzle-orm": "^0.41.0",
-        "idbsql": "^0.0.1"
     }
 }
