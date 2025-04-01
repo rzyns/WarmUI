@@ -1,0 +1,16 @@
+{
+    "extends": "@repo/typescript-config/base.json",
+    "compilerOptions": {
+        "module": "ESNext",
+        "lib": ["DOM", "ES2022"],
+        "moduleResolution": "bundler",
+        "exactOptionalPropertyTypes": true,
+        "useUnknownInCatchVariables": true,
+        "noErrorTruncation": true,
+        "noEmit": false,
+        "outDir": "dist",
+        "rootDir": "src",
+        "types": ["node", "@vitest/browser/providers/playwright"]
+    },
+    "include": ["src"]
+}

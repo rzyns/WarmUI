@@ -1,0 +1,35 @@
+{
+    "name": "@rzyns/swarmui-modeldb",
+    "version": "0.0.1",
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "test": "vitest",
+        "lint": "echo 'Add lint script here'",
+        "test:browser": "vitest"
+    },
+    "dependencies": {
+        "@date-fns/tz": "^1.2.0",
+        "@rzyns/swarmui-client": "workspace:*",
+        "date-fns": "^4.1.0",
+        "drizzle-orm": "^0.41.0",
+        "idbsql": "workspace:*",
+        "sql.js": "^1.13.0"
+    },
+    "devDependencies": {
+        "@repo/eslint-config": "workspace:*",
+        "@repo/typescript-config": "workspace:*",
+        "@rzyns/swarmui-client-cli": "workspace:*",
+        "@testing-library/dom": "^10.4.0",
+        "@vitest/browser": "^3.0.9",
+        "playwright": "^1.51.1",
+        "vite": "^6.2.3",
+        "vite-plugin-dts": "^4.5.3",
+        "vite-plugin-no-bundle": "^4.0.0",
+        "vitest": "^3.0.9"
+    },
+    "peerDependencies": {
+        "drizzle-orm": "^0.41.0",
+        "idbsql": "^0.0.1"
+    }
+}
