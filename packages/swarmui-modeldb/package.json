@@ -6,7 +6,8 @@
         "build": "vite build",
         "test": "vitest",
         "lint": "echo 'Add lint script here'",
-        "test:browser": "vitest"
+        "test:browser": "vitest",
+        "check-types": "tsc --noEmit"
     },
     "dependencies": {
         "@date-fns/tz": "^1.2.0",
