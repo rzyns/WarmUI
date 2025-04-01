@@ -1,14 +1,23 @@
 {
 	"folders": [
 		{ "path": ".", "name": "root" },
-		{ "path": "packages/eslint-config" },
-		{ "path": "packages/swarmui-client" },
-		{ "path": "packages/typescript-config" },
-		{ "path": "packages/educe" },
-		{ "path": "packages/ui" },
 		{ "path": "apps/docs" },
 		{ "path": "apps/web" },
+		{ "path": "packages/educe" },
+		{ "path": "packages/eslint-config" },
+		{ "path": "packages/idbsql" },
+		{ "path": "packages/swarmui-client-cli" },
+		{ "path": "packages/swarmui-client" },
+		{ "path": "packages/swarmui-modeldb" },
+		{ "path": "packages/typescript-config" },
+		{ "path": "packages/ui" },
 	],
 	"settings": {
+		"npm.packageManager": "pnpm",
+	},
+	"extensions": {
+		"recommendations": [
+			"vercel.turbo-vsc"
+		]
 	}
 }
