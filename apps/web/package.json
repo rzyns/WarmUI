@@ -1,24 +1,8 @@
 {
     "name": "warmui",
-    "private": true,
-    "type": "module",
     "version": "0.0.0",
-    "scripts": {
-        "dev": "vite --host 0.0.0.0",
-        "build": "tsc && vite build",
-        "preview": "vite preview",
-        "check-types": "tsc --noEmit",
-        "lint": "npm run eslint && npm run stylelint",
-        "eslint": "eslint . --cache",
-        "stylelint": "stylelint '**/*.css' --cache",
-        "prettier": "prettier --check \"**/*.{ts,tsx}\"",
-        "prettier:write": "prettier --write \"**/*.{ts,tsx}\"",
-        "vitest": "vitest run",
-        "vitest:watch": "vitest",
-        "test": "npm run check-types && npm run prettier && npm run lint && npm run vitest && npm run build",
-        "storybook": "storybook dev -p 6006 --no-open",
-        "storybook:build": "storybook build"
-    },
+    "type": "module",
+    "private": true,
     "dependencies": {
         "@mantine/core": "7.17.2",
         "@mantine/dates": "^7.17.2",
@@ -58,7 +42,7 @@
         "@types/react-dom": "^19.0.4",
         "@types/ws": "^8.18.0",
         "@vitejs/plugin-react": "^4.3.4",
-        "eslint": "^9.22.0",
+        "eslint": "^9.23.0",
         "eslint-config-mantine": "^4.0.3",
         "eslint-plugin-jsx-a11y": "^6.10.2",
         "eslint-plugin-react": "^7.37.4",
@@ -73,11 +57,27 @@
         "storybook-dark-mode": "^4.0.2",
         "stylelint": "^16.16.0",
         "stylelint-config-standard-scss": "^14.0.0",
-        "typescript": "5.7.3",
+        "typescript": "^5.8.2",
         "typescript-eslint": "^8.26.1",
-        "vite": "^6.2.2",
+        "vite": "^6.2.4",
         "vite-tsconfig-paths": "^5.1.4",
-        "vitest": "^3.0.8"
+        "vitest": "^3.1.1"
     },
-    "packageManager": "pnpm@10.5.2"
+    "packageManager": "pnpm@10.5.2",
+    "scripts": {
+        "build": "tsc && vite build",
+        "check-types": "tsc --noEmit",
+        "dev": "vite --host 0.0.0.0",
+        "eslint": "eslint . --cache",
+        "lint": "npm run eslint && npm run stylelint",
+        "prettier": "prettier --check \"**/*.{ts,tsx}\"",
+        "prettier:write": "prettier --write \"**/*.{ts,tsx}\"",
+        "preview": "vite preview",
+        "storybook": "storybook dev -p 6006 --no-open",
+        "storybook:build": "storybook build",
+        "stylelint": "stylelint '**/*.css' --cache",
+        "test": "npm run check-types && npm run prettier && npm run lint && npm run vitest && npm run build",
+        "vitest": "vitest run",
+        "vitest:watch": "vitest"
+    }
 }

@@ -2,34 +2,35 @@
     "name": "@rzyns/swarmui-modeldb",
     "version": "0.0.1",
     "type": "module",
-    "scripts": {
-        "build": "vite build",
-        "test": "vitest",
-        "lint": "echo 'Add lint script here'",
-        "test:browser": "vitest",
-        "check-types": "tsc --noEmit"
-    },
     "dependencies": {
         "@date-fns/tz": "^1.2.0",
         "@electric-sql/pglite": "^0.2.17",
-        "@rzyns/swarmui-client": "workspace:*",
+        "@rzyns/swarmui-client": "workspace:^*",
         "date-fns": "^4.1.0",
         "drizzle-orm": "^0.41.0"
     },
     "devDependencies": {
-        "@repo/eslint-config": "workspace:*",
-        "@repo/typescript-config": "workspace:*",
-        "@rzyns/swarmui-client-cli": "workspace:*",
+        "@repo/eslint-config": "workspace:^*",
+        "@repo/typescript-config": "workspace:^*",
+        "@rzyns/swarmui-client-cli": "workspace:^*",
         "@testing-library/dom": "^10.4.0",
         "@types/sql.js": "^1.4.9",
-        "@vitest/browser": "^3.0.9",
+        "@vitest/browser": "^3.1.1",
         "drizzle-kit": "^0.30.6",
         "playwright": "^1.51.1",
+        "postcss": "^8.5.3",
         "tsx": "^4.19.3",
-        "vite": "^6.2.3",
+        "vite": "^6.2.4",
         "vite-plugin-dts": "^4.5.3",
         "vite-plugin-no-bundle": "^4.0.0",
         "vite-plugin-wasm": "^3.4.1",
-        "vitest": "^3.0.9"
+        "vitest": "^3.1.1"
+    },
+    "scripts": {
+        "build": "vite build",
+        "check-types": "tsc --noEmit",
+        "lint": "echo 'Add lint script here'",
+        "test": "vitest",
+        "test:browser": "vitest"
     }
 }

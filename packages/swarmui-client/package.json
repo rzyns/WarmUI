@@ -1,33 +1,35 @@
 {
     "name": "@rzyns/swarmui-client",
     "version": "0.0.0",
-    "private": true,
     "type": "module",
-    "exports": {
-        ".": "./dist/index.js"
-    },
-    "scripts": {
-        "build": "vite build",
-        "test": "vitest --run",
-        "lint": "echo 'Add lint script here'",
-        "check-types": "tsc --noEmit"
-    },
-    "peerDependencies": {
-        "zod": "^3.24.2"
-    },
-    "devDependencies": {
-        "@repo/eslint-config": "workspace:*",
-        "@repo/typescript-config": "workspace:*",
-        "fast-check": "^3.23.2",
-        "vite": "^6.0.7",
-        "vite-plugin-dts": "^4.5.3",
-        "vite-plugin-no-bundle": "^4.0.0",
-        "vitest": "^3.0.2",
-        "zod": "^3.24.2"
-    },
+    "private": true,
     "dependencies": {
         "@date-fns/tz": "^1.2.0",
         "@date-fns/utc": "^2.1.0",
         "date-fns": "^4.1.0"
+    },
+    "devDependencies": {
+        "@repo/eslint-config": "workspace:^*",
+        "@repo/typescript-config": "workspace:^*",
+        "@vitest/browser": "^3.0.9",
+        "fast-check": "4.0.1",
+        "postcss": "^8.5.3",
+        "vite": "^6.2.4",
+        "vite-plugin-dts": "^4.5.3",
+        "vite-plugin-no-bundle": "^4.0.0",
+        "vitest": "^3.1.1",
+        "zod": "^3.24.2"
+    },
+    "exports": {
+        ".": "./dist/index.js"
+    },
+    "peerDependencies": {
+        "zod": "^3.24.2"
+    },
+    "scripts": {
+        "build": "vite build",
+        "check-types": "tsc --noEmit",
+        "lint": "echo 'Add lint script here'",
+        "test": "vitest --run"
     }
 }

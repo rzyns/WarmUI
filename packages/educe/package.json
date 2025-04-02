@@ -2,70 +2,12 @@
     "name": "educe",
     "description": "Please enter a brief description here",
     "version": "0.0.1",
-    "files": [
-        "bin",
-        "out",
-        "src"
-    ],
     "type": "module",
-    "scripts": {
-        "build:web": "npm run build",
-        "build": "tsc -b tsconfig.src.json && node esbuild.mjs",
-
-        "bundle:serve": "http-server ./dist --port 5175",
-        "bundle": "vite build",
-
-        "check-types": "tsc -b tsconfig.src.json",
-
-        "dev:debug": "vite --debug --force",
-        "dev": "vite",
-
-        "langium:generate:production": "langium generate --mode=production",
-        "langium:generate": "langium generate",
-        "langium:watch": "langium generate --watch",
-
-        "lint": "eslint src --ext ts",
-        "serve": "npm run dev",
-        "test": "vitest run",
-        "vscode:prepublish": "npm run build && npm run lint",
-        "watch": "concurrently -n tsc,esbuild -c blue,yellow \"tsc -b tsconfig.src.json --watch\" \"node esbuild.mjs --watch\""
-    },
-    "dependencies": {
-        "langium": "~3.4.0",
-        "vscode-languageclient": "~9.0.1",
-        "vscode-languageserver": "~9.0.1",
-        "chalk": "~5.3.0",
-        "commander": "~11.0.0",
-        "@codingame/monaco-vscode-editor-service-override": "~3.2.3",
-        "@codingame/monaco-vscode-keybindings-service-override": "~3.2.3",
-        "monaco-editor": "npm:@codingame/monaco-vscode-editor-api@~3.2.3",
-        "monaco-editor-wrapper": "~4.0.2",
-        "monaco-languageclient": "~8.1.1",
-        "vscode": "npm:@codingame/monaco-vscode-api@~3.2.3"
-    },
-    "devDependencies": {
-        "@types/node": "^18.0.0",
-        "@typescript-eslint/parser": "~7.3.1",
-        "@typescript-eslint/eslint-plugin": "~7.3.1",
-        "eslint": "~8.57.0",
-        "langium-cli": "~3.4.0",
-        "typescript": "~5.1.6",
-        "@types/vscode": "~1.67.0",
-        "concurrently": "~8.2.1",
-        "esbuild": "~0.20.2",
-        "@codingame/esbuild-import-meta-url-plugin": "~1.0.2",
-        "vite": "~5.2.7",
-        "http-server": "~14.1.1",
-        "vitest": "~1.4.0"
-    },
-    "volta": {
-        "node": "18.19.1",
-        "npm": "10.2.4"
-    },
-    "displayName": "educe",
-    "engines": {
-        "vscode": "^1.67.0",
-        "node": ">=18.0.0"
+    "activationEvents": [
+        "onLanguage:educe"
+    ],
+    "bin": {
+        "educe-cli": "./bin/cli.js"
     },
     "categories": [
         "Programming Languages"
@@ -78,7 +20,11 @@
                     "Educe",
                     "educe"
                 ],
-                "extensions": [".ed", ".educe", ".prompt"],
+                "extensions": [
+                    ".ed",
+                    ".educe",
+                    ".prompt"
+                ],
                 "configuration": "./language-configuration.json"
             }
         ],
@@ -90,11 +36,64 @@
             }
         ]
     },
-    "activationEvents": [
-        "onLanguage:educe"
+    "dependencies": {
+        "@codingame/monaco-vscode-editor-service-override": "~3.2.3",
+        "@codingame/monaco-vscode-keybindings-service-override": "~3.2.3",
+        "chalk": "~5.3.0",
+        "commander": "~11.0.0",
+        "langium": "~3.4.0",
+        "monaco-editor": "npm:@codingame/monaco-vscode-editor-api@~3.2.3",
+        "monaco-editor-wrapper": "~4.0.2",
+        "monaco-languageclient": "~8.1.1",
+        "vscode": "npm:@codingame/monaco-vscode-api@~3.2.3",
+        "vscode-languageclient": "~9.0.1",
+        "vscode-languageserver": "~9.0.1"
+    },
+    "devDependencies": {
+        "@codingame/esbuild-import-meta-url-plugin": "~1.0.2",
+        "@types/node": "^18.0.0",
+        "@types/vscode": "~1.67.0",
+        "@typescript-eslint/eslint-plugin": "~7.3.1",
+        "@typescript-eslint/parser": "~7.3.1",
+        "concurrently": "~8.2.1",
+        "esbuild": "~0.20.2",
+        "eslint": "~8.57.0",
+        "http-server": "~14.1.1",
+        "langium-cli": "~3.4.0",
+        "typescript": "~5.1.6",
+        "vite": "~5.2.7",
+        "vitest": "~1.4.0"
+    },
+    "displayName": "educe",
+    "engines": {
+        "vscode": "^1.67.0",
+        "node": ">=18.0.0"
+    },
+    "files": [
+        "bin",
+        "out",
+        "src"
     ],
     "main": "./out/extension/main.cjs",
-    "bin": {
-        "educe-cli": "./bin/cli.js"
+    "scripts": {
+        "build": "tsc -b tsconfig.src.json && node esbuild.mjs",
+        "build:web": "npm run build",
+        "bundle": "vite build",
+        "bundle:serve": "http-server ./dist --port 5175",
+        "check-types": "tsc -b tsconfig.src.json",
+        "dev": "vite",
+        "dev:debug": "vite --debug --force",
+        "langium:generate": "langium generate",
+        "langium:generate:production": "langium generate --mode=production",
+        "langium:watch": "langium generate --watch",
+        "lint": "eslint src --ext ts",
+        "serve": "npm run dev",
+        "test": "vitest run",
+        "vscode:prepublish": "npm run build && npm run lint",
+        "watch": "concurrently -n tsc,esbuild -c blue,yellow \"tsc -b tsconfig.src.json --watch\" \"node esbuild.mjs --watch\""
+    },
+    "volta": {
+        "node": "18.19.1",
+        "npm": "10.2.4"
     }
 }

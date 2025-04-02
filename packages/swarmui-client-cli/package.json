@@ -1,19 +1,21 @@
 {
-  "name": "@rzyns/swarmui-client-cli",
-  "version": "0.0.1",
-  "type": "module",
-  "bin": "./dist/index.js",
-  "scripts": {
-    "build": "ncc --source-map --target es2022 --no-cache --transpile-only --out dist build src/bin/cli.ts",
-    "test": "vitest --run",
-    "lint": "echo 'Add lint script here'",
-    "check-types": "tsc --noEmit"
-  },
-  "devDependencies": {
-    "@repo/typescript-config": "workspace:^",
-    "@rzyns/swarmui-client": "workspace:^",
-    "@vercel/ncc": "^0.38.3",
-    "cmd-ts": "^0.13.0",
-    "tsx": "^4.19.3"
-  }
+    "name": "@rzyns/swarmui-client-cli",
+    "version": "0.0.1",
+    "type": "module",
+    "bin": {
+        "swarmui": "./dist/index.js"
+    },
+    "devDependencies": {
+        "@repo/typescript-config": "workspace:^*",
+        "@rzyns/swarmui-client": "workspace:^*",
+        "@vercel/ncc": "^0.38.3",
+        "cmd-ts": "^0.13.0",
+        "tsx": "^4.19.3"
+    },
+    "scripts": {
+        "build": "ncc --source-map --target es2022 --no-cache --transpile-only --out dist build src/bin/cli.ts",
+        "check-types": "tsc --noEmit",
+        "lint": "echo 'Add lint script here'",
+        "test": "vitest --run"
+    }
 }
