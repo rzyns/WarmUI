@@ -23,18 +23,20 @@ export const Request = z.object({
 export type RequestInput = z.input<typeof Request>;
 export type Request = z.output<typeof Request>;
 
-export const Response = z.object({
-    folders: z.array(z.string()),
-    files: z.array(Raw)
-    // .transform((a): Array<Model> => a.flatMap((model) => {
-    //     const result = Model.safeParse(model);
-    //     if (result.success) {
-    //         return [result.data] as const;
-    //     } else {
-    //         return [];
-    //     }
-    // })),
-}).passthrough();
+export const Response = z
+    .object({
+        folders: z.array(z.string()),
+        files: z.array(Raw),
+        // .transform((a): Array<Model> => a.flatMap((model) => {
+        //     const result = Model.safeParse(model);
+        //     if (result.success) {
+        //         return [result.data] as const;
+        //     } else {
+        //         return [];
+        //     }
+        // })),
+    })
+    .passthrough();
 export type Response = z.output<typeof Response>;
 
 export const Endpoint = endpoint("ListModels" as const, Request, Response);

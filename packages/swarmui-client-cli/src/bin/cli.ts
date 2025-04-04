@@ -1,6 +1,6 @@
-import * as cmd from "cmd-ts";
-import * as swarmui from "@rzyns/swarmui-client";
 import * as fs from "node:fs";
+import * as swarmui from "@rzyns/swarmui-client";
+import * as cmd from "cmd-ts";
 
 export const SwarmUiClientCommand = cmd.subcommands({
     name: "swarmui-client",
@@ -25,7 +25,7 @@ export const SwarmUiClientCommand = cmd.subcommands({
                         console.log("model");
                     },
                 }),
-            }
+            },
         }),
         "dump-models": cmd.command({
             name: "dump-models",
@@ -33,17 +33,19 @@ export const SwarmUiClientCommand = cmd.subcommands({
             args: {
                 type: cmd.multioption({
                     long: "type",
-                    type: cmd.array(cmd.extendType(cmd.string, async (input) => {
-                        const value = Object.keys(swarmui.model.ModelType.enum).find(
-                            (k) => k.toLowerCase() === input.toLowerCase(),
-                        ) as swarmui.model.ModelType | undefined;
+                    type: cmd.array(
+                        cmd.extendType(cmd.string, async (input) => {
+                            const value = Object.keys(swarmui.model.ModelType.enum).find(
+                                (k) => k.toLowerCase() === input.toLowerCase(),
+                            ) as swarmui.model.ModelType | undefined;
 
-                        if (!value) {
-                            throw new Error(`Invalid model type: ${input}`);
-                        }
+                            if (!value) {
+                                throw new Error(`Invalid model type: ${input}`);
+                            }
 
-                        return value;
-                    })),
+                            return value;
+                        }),
+                    ),
                     defaultValue: () => [],
                     description: "",
                     short: "t",
@@ -59,16 +61,23 @@ export const SwarmUiClientCommand = cmd.subcommands({
                 const client = new swarmui.SwarmUIClient();
                 await client.getNewSession();
 
-                const types = type.length ? type : Object.keys(swarmui.model.ModelType.enum).map((k) => swarmui.model.ModelType.parse(k));
+                const types = type.length
+                    ? type
+                    : Object.keys(swarmui.model.ModelType.enum).map((k) => swarmui.model.ModelType.parse(k));
 
-                const results = await Promise.allSettled(types.map(async (type) => 
-                    [type, await client.listModels({
-                        depth: 100,
-                        path: "/",
-                        subtype: type,
-                    })] as const,
-                ));
-
+                const results = await Promise.allSettled(
+                    types.map(
+                        async (type) =>
+                            [
+                                type,
+                                await client.listModels({
+                                    depth: 100,
+                                    path: "/",
+                                    subtype: type,
+                                }),
+                            ] as const,
+                    ),
+                );
 
                 const data: { [K in swarmui.model.ModelType]?: swarmui.endpoint.ListModels.Response } = {};
 

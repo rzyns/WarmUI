@@ -1,6 +1,6 @@
 import * as z from "zod";
-import { Session } from "../model/Session.js";
 import { endpoint } from "../HttpRequest.js";
+import { Session } from "../model/Session.js";
 
 export const Request = z.object({});
 

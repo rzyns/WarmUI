@@ -1,6 +1,4 @@
-
 import * as z from "zod";
-
 import { endpoint } from "../HttpRequest.js";
 import { ModelName } from "../model/ModelName.js";
 import { ModelType } from "../model/ModelType.js";
@@ -15,9 +13,11 @@ export const Request = z.object({
 export type RequestInput = z.input<typeof Request>;
 export type Request = z.output<typeof Request>;
 
-export const Response = z.object({
-    model: Raw,
-}).passthrough();
+export const Response = z
+    .object({
+        model: Raw,
+    })
+    .passthrough();
 export type Response = z.output<typeof Response>;
 
 export const Endpoint = endpoint("DescribeModel" as const, Request, Response);

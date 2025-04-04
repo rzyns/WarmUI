@@ -1,22 +1,29 @@
-import { type Module, inject } from 'langium';
-import { createDefaultModule, createDefaultSharedModule, type DefaultSharedModuleContext, type LangiumServices, type LangiumSharedServices, type PartialLangiumServices } from 'langium/lsp';
-import { EduceGeneratedModule, EduceGeneratedSharedModule } from './generated/module.js';
-import { EduceValidator, registerValidationChecks } from './educe-validator.js';
+import { inject, type Module } from "langium";
+import {
+    createDefaultModule,
+    createDefaultSharedModule,
+    type DefaultSharedModuleContext,
+    type LangiumServices,
+    type LangiumSharedServices,
+    type PartialLangiumServices,
+} from "langium/lsp";
+import { EduceValidator, registerValidationChecks } from "./educe-validator.js";
+import { EduceGeneratedModule, EduceGeneratedSharedModule } from "./generated/module.js";
 
 /**
  * Declaration of custom services - add your own service classes here.
  */
 export type EduceAddedServices = {
     validation: {
-        EduceValidator: EduceValidator
-    }
-}
+        EduceValidator: EduceValidator;
+    };
+};
 
 /**
  * Union of Langium default services and your custom services - use this as constructor parameter
  * of custom service classes.
  */
-export type EduceServices = LangiumServices & EduceAddedServices
+export type EduceServices = LangiumServices & EduceAddedServices;
 
 /**
  * Dependency injection module that overrides Langium default services and contributes the
@@ -25,8 +32,8 @@ export type EduceServices = LangiumServices & EduceAddedServices
  */
 export const EduceModule: Module<EduceServices, PartialLangiumServices & EduceAddedServices> = {
     validation: {
-        EduceValidator: () => new EduceValidator()
-    }
+        EduceValidator: () => new EduceValidator(),
+    },
 };
 
 /**
@@ -45,18 +52,11 @@ export const EduceModule: Module<EduceServices, PartialLangiumServices & EduceAd
  * @returns An object wrapping the shared services and the language-specific services
  */
 export function createEduceServices(context: DefaultSharedModuleContext): {
-    shared: LangiumSharedServices,
-    Educe: EduceServices
+    shared: LangiumSharedServices;
+    Educe: EduceServices;
 } {
-    const shared = inject(
-        createDefaultSharedModule(context),
-        EduceGeneratedSharedModule
-    );
-    const Educe = inject(
-        createDefaultModule({ shared }),
-        EduceGeneratedModule,
-        EduceModule
-    );
+    const shared = inject(createDefaultSharedModule(context), EduceGeneratedSharedModule);
+    const Educe = inject(createDefaultModule({ shared }), EduceGeneratedModule, EduceModule);
     shared.ServiceRegistry.register(Educe);
     registerValidationChecks(Educe);
     if (!context.connection) {

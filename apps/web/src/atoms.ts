@@ -47,7 +47,10 @@ export const selectedModelAtom = atom<MRT_RowSelectionState>("selectedModel", ()
 //     return store;
 // });
 
-export type WarmUI_ManagedTableState = Pick<MRT_TableState<swarmui.model.Model>, "isLoading" | "sorting" | "rowSelection" >;
+export type WarmUI_ManagedTableState = Pick<
+    MRT_TableState<swarmui.model.Model>,
+    "isLoading" | "sorting" | "rowSelection"
+>;
 export const _tableStateAtom = atom<WarmUI_ManagedTableState>("tableState", {
     isLoading: false,
     rowSelection: {},
@@ -59,7 +62,8 @@ export const tableStateAtom = atom("tableState", () => {
 
     return api(store).setExports({
         setIsLoading: (isLoading: boolean) => store.setState((state) => ({ ...state, isLoading })),
-        setRowSelection: (rowSelection: MRT_RowSelectionState) => store.setState((state) => ({ ...state, rowSelection })),
+        setRowSelection: (rowSelection: MRT_RowSelectionState) =>
+            store.setState((state) => ({ ...state, rowSelection })),
         setSorting: (sorting: MRT_SortingState) => store.setState((state) => ({ ...state, sorting })),
     });
 });
@@ -112,6 +116,4 @@ export function emptyTableState<A extends MRT_RowData>(): MRT_TableState<A> {
     };
 }
 
-export function injectIndexedDb() {
-
-}
+export function injectIndexedDb() {}

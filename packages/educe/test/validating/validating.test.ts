@@ -1,13 +1,13 @@
-import { beforeAll, describe, expect, test } from "vitest";
 import { EmptyFileSystem, type LangiumDocument } from "langium";
 import { expandToString as s } from "langium/generate";
 import { parseHelper } from "langium/test";
+import { beforeAll, describe, expect, test } from "vitest";
 import type { Diagnostic } from "vscode-languageserver-types";
 import { createEduceServices } from "../../src/language/educe-module.js";
-import { Model, isModel } from "../../src/language/generated/ast.js";
+import { isModel, Model } from "../../src/language/generated/ast.js";
 
 let services: ReturnType<typeof createEduceServices>;
-let parse:    ReturnType<typeof parseHelper<Model>>;
+let parse: ReturnType<typeof parseHelper<Model>>;
 let document: LangiumDocument<Model> | undefined;
 
 beforeAll(async () => {
@@ -19,9 +19,8 @@ beforeAll(async () => {
     // await services.shared.workspace.WorkspaceManager.initializeWorkspace([]);
 });
 
-describe('Validating', () => {
-  
-    test('check no errors', async () => {
+describe("Validating", () => {
+    test("check no errors", async () => {
         document = await parse(`
             person Langium
         `);
@@ -31,34 +30,38 @@ describe('Validating', () => {
             //  'checkDocumentValid()' to sort out (critical) typos first,
             // and then evaluate the diagnostics by converting them into human readable strings;
             // note that 'toHaveLength()' works for arrays and strings alike ;-)
-            checkDocumentValid(document) || document?.diagnostics?.map(diagnosticToString)?.join('\n')
+            checkDocumentValid(document) || document?.diagnostics?.map(diagnosticToString)?.join("\n"),
         ).toHaveLength(0);
     });
 
-    test('check capital letter validation', async () => {
+    test("check capital letter validation", async () => {
         document = await parse(`
             person langium
         `);
 
         expect(
-            checkDocumentValid(document) || document?.diagnostics?.map(diagnosticToString)?.join('\n')
+            checkDocumentValid(document) || document?.diagnostics?.map(diagnosticToString)?.join("\n"),
         ).toEqual(
             // 'expect.stringContaining()' makes our test robust against future additions of further validation rules
             expect.stringContaining(s`
                 [1:19..1:26]: Person name should start with a capital.
-            `)
+            `),
         );
     });
 });
 
 function checkDocumentValid(document: LangiumDocument): string | undefined {
-    return document.parseResult.parserErrors.length && s`
+    return (
+        (document.parseResult.parserErrors.length &&
+            s`
         Parser errors:
-          ${document.parseResult.parserErrors.map(e => e.message).join('\n  ')}
-    `
-        || document.parseResult.value === undefined && `ParseResult is 'undefined'.`
-        || !isModel(document.parseResult.value) && `Root AST object is a ${document.parseResult.value.$type}, expected a '${Model}'.`
-        || undefined;
+          ${document.parseResult.parserErrors.map((e) => e.message).join("\n  ")}
+    `) ||
+        (document.parseResult.value === undefined && `ParseResult is 'undefined'.`) ||
+        (!isModel(document.parseResult.value) &&
+            `Root AST object is a ${document.parseResult.value.$type}, expected a '${Model}'.`) ||
+        undefined
+    );
 }
 
 function diagnosticToString(d: Diagnostic) {

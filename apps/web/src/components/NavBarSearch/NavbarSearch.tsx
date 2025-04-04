@@ -1,13 +1,13 @@
+import * as React from "react";
 import { IconPlus, IconSearch } from "@tabler/icons-react";
 import { ActionIcon, Badge, Box, Code, Group, Text, TextInput, Tooltip, UnstyledButton } from "@mantine/core";
-import * as React from "react";
-import classes from './NavbarSearch.module.css';
-import { UserButton } from "../UserButton/UserButton";
 import { Link } from "@/Link";
+import { UserButton } from "../UserButton/UserButton";
+import classes from "./NavbarSearch.module.css";
 
 export type Collection = {
-    label: string,
-    emoji: string,
+    label: string;
+    emoji: string;
 };
 
 export type NavbarSearchProps = {
@@ -39,7 +39,7 @@ export function NavbarSearch({ links, collections }: NavbarSearchProps) {
         >
             <Box component="span" mr={9} fz={16}>
                 {collection.emoji}
-            </Box>{' '}
+            </Box>{" "}
             {collection.label}
         </a>
     ));
@@ -56,7 +56,7 @@ export function NavbarSearch({ links, collections }: NavbarSearchProps) {
                 leftSection={<IconSearch size={12} stroke={1.5} />}
                 rightSectionWidth={70}
                 rightSection={<Code className={classes.searchCode}>Ctrl + K</Code>}
-                styles={{ section: { pointerEvents: 'none' } }}
+                styles={{ section: { pointerEvents: "none" } }}
                 mb="sm"
             />
 

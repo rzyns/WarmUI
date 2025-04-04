@@ -1,9 +1,8 @@
 import { IdbFs, MemoryFS, PGlite } from "@electric-sql/pglite";
-import { worker } from "@electric-sql/pglite/worker";
-
 import { citext } from "@electric-sql/pglite/contrib/citext";
-import { uuid_ossp } from "@electric-sql/pglite/contrib/uuid_ossp";
 import { fuzzystrmatch } from "@electric-sql/pglite/contrib/fuzzystrmatch";
+import { uuid_ossp } from "@electric-sql/pglite/contrib/uuid_ossp";
+import { worker } from "@electric-sql/pglite/worker";
 
 worker({
     async init(workerOpts) {
@@ -16,6 +15,6 @@ worker({
                 fuzzystrmatch,
                 uuid_ossp,
             },
-    });
+        });
     },
 });

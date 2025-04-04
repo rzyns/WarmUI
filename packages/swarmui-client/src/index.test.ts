@@ -1,9 +1,9 @@
-import { describe } from "vitest";
-import { SwarmUIClient } from "./SwarmUIClient.js";
+import { tz, TZDate } from "@date-fns/tz";
 import { UTCDate } from "@date-fns/utc";
 import { format } from "date-fns";
-import { tz, TZDate } from "@date-fns/tz";
+import { describe } from "vitest";
 import * as model from "./model/index.js";
+import { SwarmUIClient } from "./SwarmUIClient.js";
 
 describe("Session", () => {
     describe("basics", (test) => {
@@ -14,7 +14,9 @@ describe("Session", () => {
             expect(client.session).toHaveProperty("session_id", result.session_id);
             expect(client.session).toMatchObject({
                 output_append_user: expect.any(Boolean),
-                permissions: expect.toSatisfy((a) => Array.isArray(a) && a.every((b) => typeof b === "string")),
+                permissions: expect.toSatisfy(
+                    (a) => Array.isArray(a) && a.every((b) => typeof b === "string"),
+                ),
                 server_id: expect.toSatisfy((a) => model.ServerId.safeParse(a).success),
                 user_id: expect.toSatisfy((a) => model.UserId.safeParse(a).success),
                 session_id: expect.toSatisfy((a) => model.SessionId.safeParse(a).success),
@@ -39,21 +41,21 @@ describe("Session", () => {
                 success: true,
                 result: {
                     model: {
-                        architecture: 'stable-diffusion-xl-v1-base',
-                        class: 'Stable Diffusion XL 1.0-Base',
-                        compat_class: 'stable-diffusion-xl-v1',
+                        architecture: "stable-diffusion-xl-v1-base",
+                        class: "Stable Diffusion XL 1.0-Base",
+                        compat_class: "stable-diffusion-xl-v1",
                         is_negative_embedding: false,
                         is_supported_model_format: true,
                         license: null,
                         local: true,
-                        name: 'il/smoothMixNoobai_noobai.safetensors',
-                        resolution: '1024x1024',
-                        special_format: '',
+                        name: "il/smoothMixNoobai_noobai.safetensors",
+                        resolution: "1024x1024",
+                        special_format: "",
                         standard_height: 1024,
                         standard_width: 1024,
-                        title: 'Smooth Mix - (NoobAI/Illustrious/Pony) - NoobAI',
-                    }
-                }
+                        title: "Smooth Mix - (NoobAI/Illustrious/Pony) - NoobAI",
+                    },
+                },
             });
         });
 
@@ -74,7 +76,7 @@ describe("Session", () => {
                 result: {
                     folders: expect.any(Array),
                     files: expect.any(Array),
-                }
+                },
             });
         });
     });
@@ -87,7 +89,9 @@ describe("parsing/transform", (test) => {
             author: "some author",
             class: "this is the class",
             compat_class: "this is the compat_class",
-            date: format(new TZDate("2025/03/19 13:11:29", "America/New_York"), "yyyy/MM/dd HH:mm:ss", { in: tz(Intl.DateTimeFormat().resolvedOptions().timeZone) }),
+            date: format(new TZDate("2025/03/19 13:11:29", "America/New_York"), "yyyy/MM/dd HH:mm:ss", {
+                in: tz(Intl.DateTimeFormat().resolvedOptions().timeZone),
+            }),
             description: "some description goes here",
             hash_sha256: "something",
             is_negative_embedding: false,

@@ -1,53 +1,63 @@
-import { MonacoEditorLanguageClientWrapper, UserConfig } from 'monaco-editor-wrapper';
-import { configureWorker, defineUserServices } from './setupCommon.js';
+import { MonacoEditorLanguageClientWrapper, UserConfig } from "monaco-editor-wrapper";
+import { configureWorker, defineUserServices } from "./setupCommon.js";
 
 export const setupConfigExtended = (): UserConfig => {
     const extensionFilesOrContents = new Map();
-    extensionFilesOrContents.set('/language-configuration.json', new URL('../language-configuration.json', import.meta.url));
-    extensionFilesOrContents.set('/educe-grammar.json', new URL('../syntaxes/educe.tmLanguage.json', import.meta.url));
+    extensionFilesOrContents.set(
+        "/language-configuration.json",
+        new URL("../language-configuration.json", import.meta.url),
+    );
+    extensionFilesOrContents.set(
+        "/educe-grammar.json",
+        new URL("../syntaxes/educe.tmLanguage.json", import.meta.url),
+    );
 
     return {
         wrapperConfig: {
             serviceConfig: defineUserServices(),
             editorAppConfig: {
-                $type: 'extended',
-                languageId: 'educe',
+                $type: "extended",
+                languageId: "educe",
                 code: `// Educe is running in the web!`,
                 useDiffEditor: false,
-                extensions: [{
-                    config: {
-                        name: 'educe-web',
-                        publisher: 'generator-langium',
-                        version: '1.0.0',
-                        engines: {
-                            vscode: '*'
-                        },
-                        contributes: {
-                            languages: [{
-                                id: 'educe',
-                                extensions: [
-                                    '.educe'
+                extensions: [
+                    {
+                        config: {
+                            name: "educe-web",
+                            publisher: "generator-langium",
+                            version: "1.0.0",
+                            engines: {
+                                vscode: "*",
+                            },
+                            contributes: {
+                                languages: [
+                                    {
+                                        id: "educe",
+                                        extensions: [".educe"],
+                                        configuration: "./language-configuration.json",
+                                    },
                                 ],
-                                configuration: './language-configuration.json'
-                            }],
-                            grammars: [{
-                                language: 'educe',
-                                scopeName: 'source.educe',
-                                path: './educe-grammar.json'
-                            }]
-                        }
+                                grammars: [
+                                    {
+                                        language: "educe",
+                                        scopeName: "source.educe",
+                                        path: "./educe-grammar.json",
+                                    },
+                                ],
+                            },
+                        },
+                        filesOrContents: extensionFilesOrContents,
                     },
-                    filesOrContents: extensionFilesOrContents,
-                }],                
+                ],
                 userConfiguration: {
                     json: JSON.stringify({
-                        'workbench.colorTheme': 'Default Dark Modern',
-                        'editor.semanticHighlighting.enabled': true
-                    })
-                }
-            }
+                        "workbench.colorTheme": "Default Dark Modern",
+                        "editor.semanticHighlighting.enabled": true,
+                    }),
+                },
+            },
         },
-        languageClientConfig: configureWorker()
+        languageClientConfig: configureWorker(),
     };
 };
 

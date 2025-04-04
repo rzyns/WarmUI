@@ -1,14 +1,12 @@
+import { FC } from "react";
+import { atom, useAtomState } from "@zedux/react";
 import { Anchor, Text, Title } from "@mantine/core";
 import classes from "./Welcome.module.css";
-import { atom, useAtomState } from "@zedux/react";
-import { FC } from "react";
 
-const greetingAtom = atom('greeting', 'Hello, world!');
-
+const greetingAtom = atom("greeting", "Hello, world!");
 
 const Greeting = (() => {
     const [greeting, setGreeting] = useAtomState(greetingAtom);
-
 
     return (
         <label>
@@ -36,10 +34,12 @@ async function foo() {
 
         const result: object[] = [];
         ws.addEventListener("open", () => {
-            ws.send(JSON.stringify({
-                session_id: "EAE6198FDB2E8E1B73966BEAC813B48E3631A3BB",
-                model: "il/v1/songmix_v13",
-            }));
+            ws.send(
+                JSON.stringify({
+                    session_id: "EAE6198FDB2E8E1B73966BEAC813B48E3631A3BB",
+                    model: "il/v1/songmix_v13",
+                }),
+            );
         });
 
         ws.addEventListener("message", (message) => {
@@ -84,14 +84,15 @@ export function Welcome() {
             </Title>
             <Text c="dimmed" ta="center" size="lg" maw={580} mx="auto" mt="xl">
                 <Greeting />
-                This starter Vite project includes a minimal setup, if you want to learn more on Mantine + Vite
-                integration follow{" "}
+                This starter Vite project includes a minimal setup, if you want to learn more on Mantine +
+                Vite integration follow{" "}
                 <Anchor href="https://mantine.dev/guides/vite/" size="lg">
                     this guide
                 </Anchor>
                 . To get started edit pages/Home.page.tsx file.
-
-                <button type="button" onClick={foo} >greetingAtom</button>
+                <button type="button" onClick={foo}>
+                    greetingAtom
+                </button>
             </Text>
         </>
     );

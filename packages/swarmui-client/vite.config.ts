@@ -1,6 +1,6 @@
-import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { defineConfig } from 'vite';
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
 import noBundlePlugin from "vite-plugin-no-bundle";
 
@@ -10,7 +10,7 @@ export default defineConfig({
             insertTypesEntry: true,
             compilerOptions: {
                 declarationMap: true,
-            }
+            },
         }),
         noBundlePlugin(),
     ],

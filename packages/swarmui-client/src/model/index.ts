@@ -1,15 +1,14 @@
+import { TZDate } from "@date-fns/tz";
+import { UTCDate } from "@date-fns/utc";
+import { parse } from "date-fns";
 import * as z from "zod";
-
 import { ModelId } from "./ModelId.js";
 import { ModelName } from "./ModelName.js";
 import { ModelType } from "./ModelType.js";
 import { RawHashed } from "./Raw.js";
-import { UTCDate } from "@date-fns/utc";
-import { TZDate } from "@date-fns/tz";
-import { parse } from "date-fns";
 
 export * from "./ModelFile.js";
-export * from "./ModelId.js"
+export * from "./ModelId.js";
 export * from "./ModelName.js";
 export * from "./ModelType.js";
 export * from "./Raw.js";
@@ -30,9 +29,11 @@ const _FullyQualifiedModel = RawHashed.extend({
 });
 type _FullyQualifiedModel = z.output<typeof _FullyQualifiedModel>;
 
-export const Model = RawHashed.transform((input) => { 
+export const Model = RawHashed.transform((input) => {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const date = input.date ? new UTCDate(new TZDate(parse(input.date, DATE_FORMAT, new Date()), timezone).toUTCString()) : null;
+    const date = input.date
+        ? new UTCDate(new TZDate(parse(input.date, DATE_FORMAT, new Date()), timezone).toUTCString())
+        : null;
     return {
         ...input,
         name: input.name as ModelName,
@@ -43,7 +44,7 @@ export const Model = RawHashed.transform((input) => {
         trigger_phrase: input.trigger_phrase ?? "",
         merged_from: input.merged_from ?? "",
     } satisfies Omit<_FullyQualifiedModel, "date"> & {
-        date: UTCDate | null,
+        date: UTCDate | null;
     };
 });
 export type ModelInput = z.input<typeof Model>;

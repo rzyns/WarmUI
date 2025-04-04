@@ -2,7 +2,7 @@
  * For a detailed explanation regarding each configuration property and type check, visit:
  * https://vitest.dev/config/
  */
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
     test: {
@@ -13,8 +13,8 @@ export default defineConfig({
         //     exclude: ['**/generated'],
         // },
         deps: {
-            interopDefault: true
+            interopDefault: true,
         },
-        include: ['**/*.test.ts']
-    }
+        include: ["**/*.test.ts"],
+    },
 });

@@ -1,11 +1,11 @@
-import { AppShell, Burger, Code, Group, Skeleton, Text } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import { MantineLogo } from '@mantinex/mantine-logo';
-import NavbarSearch from '../NavBarSearch/NavbarSearch';
-import { routes } from '@/Router';
-import { IconVector } from '@tabler/icons-react';
+import { IconVector } from "@tabler/icons-react";
+import { useAtomState } from "@zedux/react";
+import { AppShell, Burger, Code, Group, Skeleton, Text } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { MantineLogo } from "@mantinex/mantine-logo";
+import { routes } from "@/Router";
 import { selectedModelAtom } from "../../atoms.js";
-import { useAtomState } from '@zedux/react';
+import NavbarSearch from "../NavBarSearch/NavbarSearch";
 
 export function WarmShell({ children }: { children?: React.ReactNode }) {
     const [opened, { toggle }] = useDisclosure();
@@ -16,8 +16,8 @@ export function WarmShell({ children }: { children?: React.ReactNode }) {
             layout="alt"
             header={{ height: 60 }}
             footer={{ height: 60 }}
-            navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !opened } }}
-            aside={{ width: 300, breakpoint: 'md', collapsed: { desktop: false, mobile: true } }}
+            navbar={{ width: 300, breakpoint: "sm", collapsed: { mobile: !opened } }}
+            aside={{ width: 300, breakpoint: "md", collapsed: { desktop: false, mobile: true } }}
             padding="md"
         >
             <AppShell.Header>
@@ -33,10 +33,12 @@ export function WarmShell({ children }: { children?: React.ReactNode }) {
                 </Group>
                 <NavbarSearch links={routes} collections={[]} />
             </AppShell.Navbar>
-            <AppShell.Main>
-                {children}
-            </AppShell.Main>
-            <AppShell.Aside p="md"><Code><pre>{JSON.stringify(selectedModel, null, 4)}</pre></Code></AppShell.Aside>
+            <AppShell.Main>{children}</AppShell.Main>
+            <AppShell.Aside p="md">
+                <Code>
+                    <pre>{JSON.stringify(selectedModel, null, 4)}</pre>
+                </Code>
+            </AppShell.Aside>
             <AppShell.Footer p="md">Footer</AppShell.Footer>
         </AppShell>
     );

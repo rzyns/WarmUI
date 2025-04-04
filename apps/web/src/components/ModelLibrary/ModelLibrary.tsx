@@ -1,18 +1,18 @@
+import { useEffect, useRef, useState } from "react";
 import * as swarmui from "@rzyns/swarmui-client";
+import { useAtomInstance, useAtomState, useAtomValue } from "@zedux/react";
 import {
-    type MRT_SortingState,
-    type MRT_RowVirtualizer,
-    useMantineReactTable,
     MRT_ColumnDef,
     MRT_GlobalFilterTextInput,
     MRT_TablePagination,
     MRT_ToolbarAlertBanner,
+    useMantineReactTable,
+    type MRT_RowVirtualizer,
+    type MRT_SortingState,
 } from "mantine-react-table";
-import { useEffect, useRef, useState } from "react";
 import { Divider, Flex, Grid, Stack, TagsInput, Title } from "@mantine/core";
-import { ModelCard } from "../ModelCard/ModelCard";
-import { useAtomInstance, useAtomState, useAtomValue } from "@zedux/react";
 import { selectedModelAtom, tableStateAtom } from "@/atoms";
+import { ModelCard } from "../ModelCard/ModelCard";
 
 export function ModelLibrary() {
     const rowVirtualizerInstanceRef = useRef<MRT_RowVirtualizer>(null);
@@ -24,11 +24,14 @@ export function ModelLibrary() {
     const tableStateApi = useAtomInstance(tableStateAtom).exports;
     const tableState = useAtomValue(tableStateAtom);
 
-    const columns = Object.keys(swarmui.model.Raw.shape).map((field) => ({
-        accessorKey: field,
-        header: field,
-        size: 150,
-    } satisfies MRT_ColumnDef<swarmui.model.Model>));
+    const columns = Object.keys(swarmui.model.Raw.shape).map(
+        (field) =>
+            ({
+                accessorKey: field,
+                header: field,
+                size: 150,
+            }) satisfies MRT_ColumnDef<swarmui.model.Model>,
+    );
 
     useEffect(() => {
         try {
@@ -48,26 +51,36 @@ export function ModelLibrary() {
 
             await client.getNewSession();
 
-            const models = await client.listModels({ depth: 1, path: "/il/00 other", subtype: swarmui.model.ModelType.enum.LoRA });
+            const models = await client.listModels({
+                depth: 1,
+                path: "/il/00 other",
+                subtype: swarmui.model.ModelType.enum.LoRA,
+            });
 
             if (models.success) {
-                setData(models.result.files.flatMap((file) => {
-                    const model = swarmui.model.Model.safeParse(file);
+                setData(
+                    models.result.files.flatMap((file) => {
+                        const model = swarmui.model.Model.safeParse(file);
 
-                    if (model.success) {
-                        return [model.data];
-                    }
+                        if (model.success) {
+                            return [model.data];
+                        }
 
-                    return [];
-                }));
+                        return [];
+                    }),
+                );
             }
         };
 
-        if (typeof window !== 'undefined') {
-            fetchData().then(
-                () => { },
-                (e) => { throw new Error("Something went wrong", { cause: e }); },
-            ).finally(() => setIsLoading(false));
+        if (typeof window !== "undefined") {
+            fetchData()
+                .then(
+                    () => {},
+                    (e) => {
+                        throw new Error("Something went wrong", { cause: e });
+                    },
+                )
+                .finally(() => setIsLoading(false));
         }
     }, []);
 
@@ -98,7 +111,9 @@ export function ModelLibrary() {
             <Flex justify="space-between" align="center">
                 <TagsInput
                     placeholder="tags"
-                    data={array_unique(table.getRowModel().flatRows.flatMap((row) => row.original.tags ?? []))}
+                    data={array_unique(
+                        table.getRowModel().flatRows.flatMap((row) => row.original.tags ?? []),
+                    )}
                     value={[]}
                     onChange={(value) => setSelectedTags(value ?? [])}
                 />
@@ -108,7 +123,12 @@ export function ModelLibrary() {
             <Divider />
             <Grid fz="md" m="0" columns={4}>
                 {table.getPaginationRowModel().rows.map((row, i) => (
-                    <Grid.Col key={i} span={1} onClick={() => row.toggleSelected()} bg={row.getIsSelected() ? "gray" : "transparent"}>
+                    <Grid.Col
+                        key={i}
+                        span={1}
+                        onClick={() => row.toggleSelected()}
+                        bg={row.getIsSelected() ? "gray" : "transparent"}
+                    >
                         <ModelCard model={row.original} />
                         <div>{JSON.stringify(row.getIsSelected())}</div>
                         {/* <div>{JSON.stringify(selectedModel)}</div> */}
