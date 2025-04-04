@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { Result } from "./Result";
 
 export const SuccessResponse = <T>(t: z.ZodType<T>) =>
     z.object({
@@ -58,7 +59,7 @@ function isErrorResponse(input: unknown): input is ErrorResponse {
 export async function invoke<N extends string, I extends z.ZodType, O extends z.ZodType>(
     endpoint: Endpoint<N, I, O>,
     input: z.output<I>,
-): Promise<SuccessResponse<O> | ErrorResponse> {
+): Promise<Result<ErrorResponse, SuccessResponse<O>>> {
     const result = await fetch(`http://localhost:7801/API/${endpoint.name}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -114,8 +115,8 @@ export async function invoke<N extends string, I extends z.ZodType, O extends z.
     }
 
     if (isErrorResponse(json)) {
-        return json;
+        return { success: false, error: json };
     }
 
-    return json;
+    return { success: true, result: json };
 }

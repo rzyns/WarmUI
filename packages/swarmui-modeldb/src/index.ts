@@ -4,6 +4,7 @@ import { PGliteWorker } from "@electric-sql/pglite/worker";
 import { MigrationConfig } from "drizzle-orm/migrator";
 import { drizzle } from "drizzle-orm/pglite";
 import migrations from "./migrations.json";
+import { SwarmUIClient } from "@rzyns/swarmui-client";
 
 export const DB_URL = "idb://swarmui-modeldb" as const;
 export type DB_URL = typeof DB_URL;
@@ -96,4 +97,27 @@ export async function migrate(db: SwarmUiModelDb) {
     }
 
     console.log("🎉 All migrations completed successfully");
+}
+
+export async function pull(db: SwarmUiModelDb) {
+    const client = new SwarmUIClient();
+    const result = await client.listAllModels({
+        depth: 100,
+        path: "/",
+    });
+
+    for (const [subtype_, model] of Object.entries(result)) {
+        const subtype = subtype_ as keyof typeof result;
+
+        if (!model.success) {
+            throw new Error(`Failed to list models: ${model.error}`);
+        }
+
+        const { models } = model.result;
+
+        for (const model of models) {
+            const { id, name, description } = model;
+            console.log(`Model ID: ${id}, Name: ${name}, Description: ${description}`);
+        }
+    }
 }

@@ -22,7 +22,7 @@ export const SwarmUiClientCommand = cmd.subcommands({
                         }),
                     },
                     handler: async ({ input }) => {
-                        console.log("model");
+                        console.log("input", input);
                     },
                 }),
             },
@@ -85,7 +85,7 @@ export const SwarmUiClientCommand = cmd.subcommands({
                     if (result.status === "fulfilled") {
                         const [type, value] = result.value;
                         if (value.success) {
-                            data[type] = value.result;
+                            data[type] = value.result.result;
                         } else {
                             console.error(`Error fetching models for type ${type}: ${value.error}`);
                         }

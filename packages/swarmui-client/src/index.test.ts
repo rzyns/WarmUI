@@ -130,7 +130,7 @@ describe("parsing/transform", (test) => {
             });
 
             if (result.success) {
-                const modelResult = model.Model.parse(result.result.model);
+                const modelResult = model.Model.parse(result.result.result.model);
                 expect(modelResult).toMatchObject({
                     date: expect.any(UTCDate),
                 });

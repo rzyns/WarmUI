@@ -6,21 +6,32 @@ export default defineConfig({
 
     optimizeDeps: {
         exclude: ["@electric-sql/pglite"],
+        holdUntilCrawlEnd: true,
+    },
+    experimental: {
+        importGlobRestoreExtension: true,
+        skipSsrTransform: true,
     },
 
     worker: { format: "es" },
 
     build: {
-        outDir: "dist",
-        sourcemap: true,
-        minify: false,
+        copyPublicDir: true,
+        emptyOutDir: true,
         lib: {
             entry: "src/index.ts",
             name: "swarmui-modeldb",
             formats: ["es"],
         },
+        manifest: true,
+        minify: false,
+        outDir: "dist",
         rollupOptions: {
             external: Object.keys(await import("./package.json").then((pkg) => pkg.dependencies)),
+            cache: false,
+            treeshake: true,
         },
+        sourcemap: true,
+        target: "esnext",
     },
 });

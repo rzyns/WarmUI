@@ -8,6 +8,7 @@
     "devDependencies": {
         "@repo/typescript-config": "workspace:^*",
         "@rzyns/swarmui-client": "workspace:^*",
+        "@types/node": "^22.14.0",
         "@vercel/ncc": "^0.38.3",
         "cmd-ts": "^0.13.0",
         "tsx": "^4.19.3"
