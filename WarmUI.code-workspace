@@ -14,10 +14,9 @@
 	],
 	"settings": {
 		"npm.packageManager": "pnpm",
+		"typescript.tsdk": "root/node_modules/typescript/lib",
 	},
 	"extensions": {
-		"recommendations": [
-			"vercel.turbo-vsc"
-		]
+		"recommendations": []
 	}
 }
