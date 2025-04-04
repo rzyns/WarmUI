@@ -1,3 +1,0 @@
-[submodule "forks/drizzle-orm"]
-	path = forks/drizzle-orm
-	url = https://github.com/drizzle-team/drizzle-orm.git
