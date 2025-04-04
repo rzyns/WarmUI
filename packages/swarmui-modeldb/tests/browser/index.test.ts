@@ -1,6 +1,6 @@
 import { describe } from "vitest";
-import { init, migrate } from "./index.js";
-import { tagsTable } from "./schema.js";
+import { init, migrate } from "../../src/index.js";
+import { tagsTable } from "../../src/schema.js";
 
 describe("ModelDB", async (test) => {
     test("something else", async ({ expect }) => {
