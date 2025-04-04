@@ -5,7 +5,7 @@
         "postcss": "^8.5.3",
         "prettier": "^3.5.3",
         "syncpack": "^13.0.3",
-        "turbo": "^2.4.4",
+        "turbo": "^2.5.0",
         "typescript": "^5.8.2",
         "vitest": "^3.1.1"
     },
