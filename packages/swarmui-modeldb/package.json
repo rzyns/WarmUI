@@ -2,6 +2,9 @@
     "name": "@rzyns/swarmui-modeldb",
     "version": "0.0.1",
     "type": "module",
+    "exports": {
+        ".": "./dist/swarmui-modeldb.js"
+    },
     "dependencies": {
         "@date-fns/tz": "^1.2.0",
         "@electric-sql/pglite": "^0.2.17",

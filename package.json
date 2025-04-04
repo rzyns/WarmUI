@@ -1,7 +1,12 @@
 {
     "name": "warmui",
     "private": true,
+    "type": "module",
     "devDependencies": {
+        "@repo/prettier-config": "workspace:*",
+        "eslint": "^9.23.0",
+        "lefthook": "^1.11.6",
+        "lint-staged": "^15.5.0",
         "postcss": "^8.5.3",
         "prettier": "^3.5.3",
         "syncpack": "^13.0.3",
@@ -26,6 +31,7 @@
         "check-types": "turbo run check-types",
         "dev": "turbo run dev",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-        "lint": "turbo run lint"
+        "lint": "turbo run lint",
+        "lint:staged": "lint-staged"
     }
 }
