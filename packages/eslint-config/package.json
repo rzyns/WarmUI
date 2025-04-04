@@ -18,8 +18,11 @@
     },
     "exports": {
         "./base": "./base.js",
+        "./base.js": "./base.js",
         "./next-js": "./next.js",
-        "./react-internal": "./react-internal.js"
+        "./next-js.js": "./next.js",
+        "./react-internal": "./react-internal.js",
+        "./react-internal.js": "./react-internal.js"
     },
     "dependencies": {
         "eslint-config-turbo": "^2.5.0"
