@@ -1,8 +1,7 @@
-import * as z from "zod";
 import * as describeModel from "./endpoint/DescribeModel.js";
 import * as session from "./endpoint/GetNewSession.js";
 import * as listModels from "./endpoint/ListModels.js";
-import { Endpoint, ErrorResponse, HttpResponse, invoke, SuccessResponse } from "./HttpRequest.js";
+import { Endpoint, HttpResponse, invoke } from "./HttpRequest.js";
 import { Session } from "./model/Session.js";
 import { ModelType } from "./model/ModelType.js";
 import { ListModels } from "./endpoint/index.js";
@@ -45,7 +44,19 @@ export class SwarmUIClient {
     }
 
     public async listModels(input: OmitSessionId<listModels.RequestInput>) {
-        return await this.doRequest(ListModels.Endpoint, input);
+        return await this.doRequest(ListModels.Endpoint, input).then((result) => {
+            if (!result.success) {
+                return result;
+            } else {
+                return {
+                    ...result,
+                    files: result.result.files.map((file) => ({
+                        ...file,
+                        subtype: input.subtype,
+                    })),
+                };
+            }
+        });
     }
 
     public async listAllModels(input: Omit<OmitSessionId<listModels.RequestInput>, "subtype">) {
