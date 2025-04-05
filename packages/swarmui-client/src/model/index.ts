@@ -38,7 +38,6 @@ export const Model = RawHashed.transform((input) => {
         ...input,
         name: input.name as ModelName,
         id: input.hash_sha256 as ModelId,
-        type: ModelType.enum.LoRA,
         date: date,
         license: input.license ?? "",
         trigger_phrase: input.trigger_phrase ?? "",
@@ -54,7 +53,7 @@ export const Model = RawHashed.transform((input) => {
 export type ModelInput = z.input<typeof Model>;
 export type Model = z.output<typeof Model>;
 
-let _modelInput: ModelInput = {} as any;
-let _rawModel: RawHashed = {} as any;
+let _modelInput: ModelInput = {} as unknown as ModelInput;
+let _rawModel: RawHashed = {} as unknown as RawHashed;
 _modelInput = _rawModel;
 _rawModel = _modelInput;

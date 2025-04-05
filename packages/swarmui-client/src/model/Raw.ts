@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { ModelType } from "./ModelType";
 
 export const Raw = z
     .object({
@@ -21,6 +22,7 @@ export const Raw = z
         is_negative_embedding: z.boolean(),
         local: z.boolean(),
 
+        type: ModelType.optional().nullable(),
         usage_hint: z.string().optional().nullable(),
         license: z.string().optional().nullable(),
         trigger_phrase: z.string().optional().nullable(),
@@ -33,14 +35,14 @@ export const Raw = z
         time_modified: z.number().optional().nullable(),
     })
     .passthrough();
-export interface Raw extends z.output<typeof Raw> {}
+export type Raw = z.output<typeof Raw>;
 
 export const RawHashed = Raw.extend({
     hash_sha256: z.string(),
-});
+}).passthrough();
 export type RawHashed = z.output<typeof RawHashed>;
 
 export const RawUnhashed = Raw.extend({
     hash_sha256: z.never(),
-});
+}).passthrough();
 export type RawUnhashed = z.output<typeof RawUnhashed>;

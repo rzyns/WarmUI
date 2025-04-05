@@ -147,9 +147,11 @@ describe("parsing/transform", { timeout: 60_000 }, async (test) => {
             
             for (const [subtype, result] of Object.entries(response)) {
                 for (const file of result.files) {
-                    expect(() => model.Model.parse(file)).not.toThrow();
-                    const result = model.Model.parse(file);
-                    expect(result).toHaveProperty("subtype", subtype);
+                    expect(() => {
+                        const parsedModel = model.Model.parse(file);
+                        expect(parsedModel.type).toStrictEqual(subtype);
+                    }).not.toThrow();
+
                 }
             }
         });

@@ -44,34 +44,30 @@ export class SwarmUIClient {
     }
 
     public async listModels(input: OmitSessionId<listModels.RequestInput>) {
-        return await this.doRequest(ListModels.Endpoint, input).then((result) => {
-            if (!result.success) {
-                return result;
-            } else {
-                return {
-                    ...result,
-                    files: result.result.files.map((file) => ({
-                        ...file,
-                        subtype: input.subtype,
-                    })),
-                };
+        const response = await this.doRequest(ListModels.Endpoint, input);
+
+        if (response.success) {
+            for (let i = 0; i < response.result.files.length; i++) {
+                response.result.files[i]!.type = input.subtype;
             }
-        });
+        }
+
+        return response;
     }
 
     public async listAllModels(input: Omit<OmitSessionId<listModels.RequestInput>, "subtype">) {
         const tasks = Object.values(ModelType.enum).map(async (subtype) => {
-            return [subtype, await this.doRequest(listModels.Endpoint, { ...input, subtype })] as const;
+            return [subtype, await this.listModels({ ...input, subtype })] as const;
         });
 
-        return (await Promise.all(tasks)).reduce((acc, [subtype, model]) => {
-            if (!model.success) {
+        return (await Promise.all(tasks)).reduce((acc, [subtype, listModelsResponse]) => {
+            if (!listModelsResponse.success) {
                 throw new Error("Failed to list models");
             }
 
             return {
                 ...acc,
-                [subtype]: model.result,
+                [subtype]: listModelsResponse.result,
             };
         }, {} as Record<ModelType, ListModels.Response>);
     }
