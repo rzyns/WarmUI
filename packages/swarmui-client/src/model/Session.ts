@@ -22,4 +22,4 @@ export const Session = z.object({
     permissions: z.array(z.string()),
 });
 
-export interface Session extends z.output<typeof Session> {}
+export type Session = z.output<typeof Session>;

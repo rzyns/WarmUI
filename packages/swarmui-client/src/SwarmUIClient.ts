@@ -2,7 +2,7 @@ import * as z from "zod";
 import * as describeModel from "./endpoint/DescribeModel.js";
 import * as session from "./endpoint/GetNewSession.js";
 import * as listModels from "./endpoint/ListModels.js";
-import { Endpoint, invoke } from "./HttpRequest.js";
+import { Endpoint, ErrorResponse, HttpResponse, invoke, SuccessResponse } from "./HttpRequest.js";
 import { Session } from "./model/Session.js";
 import { ModelType } from "./model/ModelType.js";
 import { ListModels } from "./endpoint/index.js";
@@ -22,15 +22,15 @@ export class SwarmUIClient {
         return this._session;
     }
 
-    public async doRequest<N extends string, I extends z.ZodTypeAny, O extends z.ZodTypeAny>(
+    public async doRequest<N extends string, I, O>(
         endpoint: Endpoint<N, I, O>,
-        input: OmitSessionId<z.input<I>>,
-    ) {
+        input: OmitSessionId<I>,
+    ): Promise<HttpResponse<O>> {
         if (!this.session) {
             throw new SessionNotInitializedError("Session not initialized");
         }
 
-        return invoke(endpoint, { session_id: this.session.session_id, ...input });
+        return await invoke(endpoint, endpoint.input.parse({ session_id: this.session.session_id, ...input }))
     }
 
     public async getNewSession(): Promise<Session> {
@@ -40,12 +40,12 @@ export class SwarmUIClient {
             throw new Error("Failed to get new session");
         }
 
-        this._session = result.result.result;
-        return result.result.result;
+        this._session = result.result;
+        return result.result;
     }
 
     public async listModels(input: OmitSessionId<listModels.RequestInput>) {
-        return this.doRequest(listModels.Endpoint, input);
+        return await this.doRequest(ListModels.Endpoint, input);
     }
 
     public async listAllModels(input: Omit<OmitSessionId<listModels.RequestInput>, "subtype">) {
@@ -58,12 +58,12 @@ export class SwarmUIClient {
                 throw new Error("Failed to list models");
             }
 
-            acc[subtype] = model.result.result;
-
-            return acc;
+            return {
+                ...acc,
+                [subtype]: model.result,
+            };
         }, {} as Record<ModelType, ListModels.Response>);
     }
-
 
     public async describeModel(input: OmitSessionId<describeModel.RequestInput>) {
         return this.doRequest(describeModel.Endpoint, input);

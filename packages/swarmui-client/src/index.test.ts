@@ -24,65 +24,65 @@ describe("Session", () => {
             } satisfies model.Session);
         });
     });
+});
 
-    describe("models", async (test) => {
-        test("describe model", async ({ expect }) => {
-            const client = new SwarmUIClient();
-            await client.getNewSession();
+describe("models", { timeout: 60_000 }, async (test) => {
+    test("describe model", async ({ expect }) => {
+        const client = new SwarmUIClient();
+        await client.getNewSession();
 
-            expect(client.session?.session_id).toMatch(/^[0-9a-f]+$/i);
+        expect(client.session?.session_id).toMatch(/^[0-9a-f]+$/i);
 
-            const result = await client.describeModel({
-                modelName: "il/smoothMixNoobai_noobai.safetensors",
-                subType: model.ModelType.enum.StableDiffusion,
-            });
-
-            expect(result).toMatchObject({
-                success: true,
-                result: {
-                    model: {
-                        architecture: "stable-diffusion-xl-v1-base",
-                        class: "Stable Diffusion XL 1.0-Base",
-                        compat_class: "stable-diffusion-xl-v1",
-                        is_negative_embedding: false,
-                        is_supported_model_format: true,
-                        license: null,
-                        local: true,
-                        name: "il/smoothMixNoobai_noobai.safetensors",
-                        resolution: "1024x1024",
-                        special_format: "",
-                        standard_height: 1024,
-                        standard_width: 1024,
-                        title: "Smooth Mix - (NoobAI/Illustrious/Pony) - NoobAI",
-                    },
-                },
-            });
+        const result = await client.describeModel({
+            modelName: "il/smoothMixNoobai_noobai.safetensors",
+            subType: model.ModelType.enum.StableDiffusion,
         });
 
-        test("list models", async ({ expect }) => {
-            const client = new SwarmUIClient();
-            await client.getNewSession();
-
-            expect(client.session?.session_id).toMatch(/^[0-9a-f]+$/i);
-
-            const result = await client.listModels({
-                depth: 100,
-                path: "/",
-                subtype: model.ModelType.enum.LoRA,
-            });
-
-            expect(result).toMatchObject({
-                success: true,
-                result: {
-                    folders: expect.any(Array),
-                    files: expect.any(Array),
+        expect(result).toMatchObject({
+            success: true,
+            result: {
+                model: {
+                    architecture: "stable-diffusion-xl-v1-base",
+                    class: "Stable Diffusion XL 1.0-Base",
+                    compat_class: "stable-diffusion-xl-v1",
+                    is_negative_embedding: false,
+                    is_supported_model_format: true,
+                    license: null,
+                    local: true,
+                    name: "il/smoothMixNoobai_noobai.safetensors",
+                    resolution: "1024x1024",
+                    special_format: "",
+                    standard_height: 1024,
+                    standard_width: 1024,
+                    title: "Smooth Mix - (NoobAI/Illustrious/Pony) - NoobAI",
                 },
-            });
+            },
+        });
+    });
+
+    test("list models", async ({ expect }) => {
+        const client = new SwarmUIClient();
+        await client.getNewSession();
+
+        expect(client.session?.session_id).toMatch(/^[0-9a-f]+$/i);
+
+        const result = await client.listModels({
+            depth: 100,
+            path: "/",
+            subtype: model.ModelType.enum.LoRA,
+        });
+
+        expect(result).toMatchObject({
+            success: true,
+            result: {
+                folders: expect.any(Array),
+                files: expect.any(Array),
+            },
         });
     });
 });
 
-describe("parsing/transform", (test) => {
+describe("parsing/transform", { timeout: 60_000 }, async (test) => {
     test("transform input model type to FullyQualifiedModel", async ({ expect }) => {
         const input: model.Raw = {
             architecture: "architecture",
@@ -117,6 +117,7 @@ describe("parsing/transform", (test) => {
 
         expect(result.id).toStrictEqual("something");
     });
+
     describe("model", (test) => {
         test("fully qualified model", async ({ expect }) => {
             const client = new SwarmUIClient();
@@ -130,12 +131,26 @@ describe("parsing/transform", (test) => {
             });
 
             if (result.success) {
-                const modelResult = model.Model.parse(result.result.result.model);
+                const modelResult = model.Model.parse(result.result.model);
                 expect(modelResult).toMatchObject({
                     date: expect.any(UTCDate),
                 });
             } else {
                 throw new Error("result was not successful");
+            }
+        });
+        test("test listAllModels", async ({ expect }) => {
+            const client = new SwarmUIClient();
+            await client.getNewSession();
+
+            const response = await client.listAllModels({ depth: 100, path: "/" });
+            
+            for (const [subtype, result] of Object.entries(response)) {
+                for (const file of result.files) {
+                    expect(() => model.Model.parse(file)).not.toThrow();
+                    const result = model.Model.parse(file);
+                    expect(result).toHaveProperty("subtype", subtype);
+                }
             }
         });
     });

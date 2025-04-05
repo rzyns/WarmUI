@@ -1,5 +1,4 @@
 import * as z from "zod";
-import { Result } from "./Result";
 
 export const SuccessResponse = <T>(t: z.ZodType<T>) =>
     z.object({
@@ -7,9 +6,9 @@ export const SuccessResponse = <T>(t: z.ZodType<T>) =>
         result: t,
     });
 
-export type SuccessResponse<T extends z.ZodType> = {
+export type SuccessResponse<T> = {
     success: true;
-    result: z.output<T>;
+    result: T;
 };
 
 export const ErrorResponse = z.object({
@@ -18,22 +17,22 @@ export const ErrorResponse = z.object({
 }) satisfies z.ZodType<{ success: false; error: string }>;
 export interface ErrorResponse extends z.output<typeof ErrorResponse> {}
 
-export const HttpResponse = <T extends z.ZodType>(t: T) =>
+export const HttpResponse = <T>(t: z.ZodType<T>) =>
     z.discriminatedUnion("success", [SuccessResponse(t), ErrorResponse]);
-export type HttpResponse<T extends z.ZodType> = SuccessResponse<T> | ErrorResponse;
+export type HttpResponse<T> = SuccessResponse<T> | ErrorResponse;
 
-export type Endpoint<N extends string, T extends z.ZodType, U extends z.ZodType> = {
+export type Endpoint<N extends string, T, U> = {
     name: N;
-    input: T;
-    output: U;
+    input: z.ZodType<T>;
+    output: z.ZodType<U>;
 };
 
 export function endpoint<N extends string, T extends z.ZodTypeAny, U extends z.ZodTypeAny>(
     name: N,
     input: T,
     output: U,
-): Endpoint<N, T, U> {
-    return { name, input, output };
+): Endpoint<N, z.input<T>, z.output<U>> {
+    return { name, input, output } as const;
 }
 
 export class HttpError extends Error {
@@ -48,6 +47,12 @@ export class ParseError extends Error {
     }
 }
 
+export class JsonParseError extends Error {
+    static {
+        this.prototype.name = "JsonParseError";
+    }
+}
+
 // function isResponse(input: unknown) {
 //     return typeof input === "object" && input !== null && "success" in input;
 // }
@@ -56,20 +61,20 @@ function isErrorResponse(input: unknown): input is ErrorResponse {
     return typeof input === "object" && input !== null && "success" in input && input.success === false;
 }
 
-export async function invoke<N extends string, I extends z.ZodType, O extends z.ZodType>(
+export async function invoke<N extends string, I, O>(
     endpoint: Endpoint<N, I, O>,
-    input: z.output<I>,
-): Promise<Result<ErrorResponse, SuccessResponse<O>>> {
-    const result = await fetch(`http://localhost:7801/API/${endpoint.name}`, {
+    input: I,
+): Promise<HttpResponse<O>> {
+    const url = new URL(`http://172.20.80.1:7801/API/${endpoint.name}`);
+    
+    const result = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(input),
         redirect: "manual",
     }).then(
         (d) => d,
-        (e) => {
-            return new HttpError("HTTP Transport Error", { cause: e });
-        },
+        (e) => new HttpError("HTTP Transport Error", { cause: e }),
     );
 
     if (result instanceof Error) {
@@ -77,7 +82,7 @@ export async function invoke<N extends string, I extends z.ZodType, O extends z.
     }
 
     if (result.status === 302 && result.headers.get("Location")?.startsWith("/Error")) {
-        const errorMessage = await fetch(`http://localhost:7801${result.headers.get("Location")}`).then((d) =>
+        const errorMessage = await fetch(`http://172.20.80.1:7801${result.headers.get("Location")}`).then((d) =>
             d.text(),
         );
         throw new HttpError(`HTTP Transport Error ${result.headers.get("Location")}`, {
@@ -86,23 +91,18 @@ export async function invoke<N extends string, I extends z.ZodType, O extends z.
     }
 
     const json = await result.text().then(
-        (d) => {
+        (d): SuccessResponse<O> | ParseError | JsonParseError => {
             try {
-                const data = JSON.parse(d);
-                if (typeof data === "object" && data !== null && !("success" in data)) {
-                    const parsed = endpoint.output.safeParse(data);
-                    if (parsed.success) {
-                        return { success: true, result: parsed.data };
-                    } else {
-                        return new ParseError(`${endpoint.name} (Output) parse Error`, {
-                            cause: { error: parsed.error, input: data },
-                        });
-                    }
+                const parsed = endpoint.output.safeParse(JSON.parse(d));
+                if (parsed.success) {
+                    return { success: true, result: parsed.data };
                 } else {
-                    return data;
+                    return new ParseError(`${endpoint.name} (Output) parse Error`, {
+                        cause: { error: parsed.error, input: parsed },
+                    });
                 }
             } catch (e) {
-                throw new ParseError("JSON Parse Error", { cause: e });
+                throw new JsonParseError("JSON Parse Error", { cause: e });
             }
         },
         (e) => {
@@ -115,8 +115,9 @@ export async function invoke<N extends string, I extends z.ZodType, O extends z.
     }
 
     if (isErrorResponse(json)) {
-        return { success: false, error: json };
+        // return { success: false, error: json };
+        return json;
     }
 
-    return { success: true, result: json };
+    return json;
 }

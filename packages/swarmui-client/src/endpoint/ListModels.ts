@@ -38,5 +38,6 @@ export const Response = z
     })
     .passthrough();
 export type Response = z.output<typeof Response>;
+;
 
 export const Endpoint = endpoint("ListModels" as const, Request, Response);

@@ -43,8 +43,12 @@ export const Model = RawHashed.transform((input) => {
         license: input.license ?? "",
         trigger_phrase: input.trigger_phrase ?? "",
         merged_from: input.merged_from ?? "",
-    } satisfies Omit<_FullyQualifiedModel, "date"> & {
+        time_created: input.time_created ? new UTCDate(input.time_created) : null,
+        time_modified: input.time_modified ? new UTCDate(input.time_modified) : null,
+    } satisfies Omit<_FullyQualifiedModel, "date" | "time_created" | "time_modified"> & {
         date: UTCDate | null;
+        time_created: UTCDate | null;
+        time_modified: UTCDate | null;
     };
 });
 export type ModelInput = z.input<typeof Model>;

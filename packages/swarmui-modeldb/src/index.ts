@@ -1,10 +1,11 @@
 import { IdbFs, PGlite } from "@electric-sql/pglite";
 import { live } from "@electric-sql/pglite/live";
 import { PGliteWorker } from "@electric-sql/pglite/worker";
-import { MigrationConfig } from "drizzle-orm/migrator";
 import { drizzle } from "drizzle-orm/pglite";
 import migrations from "./migrations.json";
 import { SwarmUIClient } from "@rzyns/swarmui-client";
+import { modelsTable } from "./schema";
+import { Model } from "../../swarmui-client/dist/model";
 
 export const DB_URL = "idb://swarmui-modeldb" as const;
 export type DB_URL = typeof DB_URL;
@@ -99,8 +100,9 @@ export async function migrate(db: SwarmUiModelDb) {
     console.log("🎉 All migrations completed successfully");
 }
 
-export async function pull(db: SwarmUiModelDb) {
-    const client = new SwarmUIClient();
+export async function pull(db: SwarmUiModelDb, client_?: SwarmUIClient) {
+    const client = client_ ?? new SwarmUIClient();
+    await client.getNewSession();
     const result = await client.listAllModels({
         depth: 100,
         path: "/",
@@ -109,15 +111,13 @@ export async function pull(db: SwarmUiModelDb) {
     for (const [subtype_, model] of Object.entries(result)) {
         const subtype = subtype_ as keyof typeof result;
 
-        if (!model.success) {
-            throw new Error(`Failed to list models: ${model.error}`);
-        }
+        for (const file of model.files) {
+            const { id, name, description, createdAt } = file;
+            console.log(`Model ID: ${id}, Name: ${name}, Description: ${description}, Created At: ${createdAt}`);
 
-        const { models } = model.result;
+            const hydratedModel = Model.parse(file);
 
-        for (const model of models) {
-            const { id, name, description } = model;
-            console.log(`Model ID: ${id}, Name: ${name}, Description: ${description}`);
+            await db.insert(modelsTable).values([hydratedModel])
         }
     }
 }
