@@ -1,24 +1,24 @@
 {
-  "id": "99e60253-fe19-40d3-97d3-53e1c66a761b",
+  "id": "3cef309d-c2f5-4b3d-9dfd-9ca6c9f08e85",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.models": {
-      "name": "models",
+    "public.modelsMeta": {
+      "name": "modelsMeta",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "varchar",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "architecture": {
-          "name": "architecture",
+        "model_id": {
+          "name": "model_id",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
+        },
+        "folder": {
+          "name": "folder",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
         },
         "author": {
           "name": "author",
@@ -32,33 +32,15 @@
           "primaryKey": false,
           "notNull": false
         },
-        "class": {
-          "name": "class",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "compat_class": {
-          "name": "compat_class",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
         "description": {
           "name": "description",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "hash_sha256": {
-          "name": "hash_sha256",
-          "type": "varchar",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
         "license": {
           "name": "license",
-          "type": "varchar",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -74,33 +56,9 @@
           "primaryKey": false,
           "notNull": false
         },
-        "loaded": {
-          "name": "loaded",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "local": {
-          "name": "local",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "merged_from": {
-          "name": "merged_from",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
         "preview_image": {
           "name": "preview_image",
-          "type": "varchar",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -134,18 +92,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "type": {
-          "name": "type",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "hash": {
-          "name": "hash",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
         "time_created": {
           "name": "time_created",
           "type": "timestamp",
@@ -161,6 +107,107 @@
         "usage_hint": {
           "name": "usage_hint",
           "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "modelsMeta_model_id_models_id_fk": {
+          "name": "modelsMeta_model_id_models_id_fk",
+          "tableFrom": "modelsMeta",
+          "tableTo": "models",
+          "columnsFrom": [
+            "model_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "model_id_pk": {
+          "name": "model_id_pk",
+          "columns": [
+            "folder",
+            "model_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.models": {
+      "name": "models",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "architecture": {
+          "name": "architecture",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "class": {
+          "name": "class",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "compat_class": {
+          "name": "compat_class",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hash": {
+          "name": "hash",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hash_sha256": {
+          "name": "hash_sha256",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "merged_from": {
+          "name": "merged_from",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "time_created": {
+          "name": "time_created",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "time_modified": {
+          "name": "time_modified",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         }
@@ -196,14 +243,20 @@
       "name": "tags_to_models",
       "schema": "",
       "columns": {
+        "tag": {
+          "name": "tag",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "model_id": {
           "name": "model_id",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
-        "tag": {
-          "name": "tag",
+        "folder": {
+          "name": "folder",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
@@ -211,19 +264,6 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "tags_to_models_model_id_models_id_fk": {
-          "name": "tags_to_models_model_id_models_id_fk",
-          "tableFrom": "tags_to_models",
-          "tableTo": "models",
-          "columnsFrom": [
-            "model_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
         "tags_to_models_tag_tags_tag_fk": {
           "name": "tags_to_models_tag_tags_tag_fk",
           "tableFrom": "tags_to_models",
@@ -233,6 +273,21 @@
           ],
           "columnsTo": [
             "tag"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "model_id": {
+          "name": "model_id",
+          "tableFrom": "tags_to_models",
+          "tableTo": "modelsMeta",
+          "columnsFrom": [
+            "folder",
+            "model_id"
+          ],
+          "columnsTo": [
+            "folder",
+            "model_id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"

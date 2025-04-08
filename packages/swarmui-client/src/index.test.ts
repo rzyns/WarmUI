@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { describe } from "vitest";
 import * as model from "./model/index.js";
 import { SwarmUIClient } from "./SwarmUIClient.js";
+import { DATE_FORMAT, ModelDate } from "./model/ModelDate.js";
 
 describe("Session", () => {
     describe("basics", (test) => {
@@ -25,6 +26,19 @@ describe("Session", () => {
         });
     });
 });
+
+describe("basic parsing", (test) => {
+    test("parse date", async ({ expect }) => {
+        const input = "12/22/2024 06:06:44";
+        const expected = new Date(input).toISOString();
+
+        const result = ModelDate.safeParse(input);
+
+        expect(result.success).toBe(true);
+        expect(result.data).toBeInstanceOf(UTCDate);
+        expect(result.data!.toISOString()).toStrictEqual(expected);
+    });
+})
 
 describe("models", { timeout: 60_000 }, async (test) => {
     test("describe model", async ({ expect }) => {
@@ -80,80 +94,78 @@ describe("models", { timeout: 60_000 }, async (test) => {
             },
         });
     });
-});
+    describe("parsing/transform", { timeout: 60_000 }, async (test) => {
+        test("transform input model type to FullyQualifiedModel", async ({ expect }) => {
+            const input: model.Raw = {
+                architecture: "architecture",
+                author: "some author",
+                class: "this is the class",
+                compat_class: "this is the compat_class",
+                date: format(new TZDate("2025/03/19 13:11:29", "America/New_York"), DATE_FORMAT, {
+                    in: tz(Intl.DateTimeFormat().resolvedOptions().timeZone),
+                }),
+                description: "some description goes here",
+                hash_sha256: "something",
+                is_negative_embedding: false,
+                is_supported_model_format: true,
+                loaded: false,
+                local: false,
+                name: "this is the name of the model",
+                preview_image: "nothing to see here",
+                standard_height: 1280,
+                standard_width: 1920,
+                tags: ["some", "tags", "would", "be", "here"],
+                title: "A Title",
+                usage_hint: "some usage hint",
+                license: "some license",
+                merged_from: "some model",
+                trigger_phrase: "some trigger phrase",
+            };
 
-describe("parsing/transform", { timeout: 60_000 }, async (test) => {
-    test("transform input model type to FullyQualifiedModel", async ({ expect }) => {
-        const input: model.Raw = {
-            architecture: "architecture",
-            author: "some author",
-            class: "this is the class",
-            compat_class: "this is the compat_class",
-            date: format(new TZDate("2025/03/19 13:11:29", "America/New_York"), "yyyy/MM/dd HH:mm:ss", {
-                in: tz(Intl.DateTimeFormat().resolvedOptions().timeZone),
-            }),
-            description: "some description goes here",
-            hash_sha256: "something",
-            is_negative_embedding: false,
-            is_supported_model_format: true,
-            loaded: false,
-            local: false,
-            name: "this is the name of the model",
-            preview_image: "nothing to see here",
-            standard_height: 1280,
-            standard_width: 1920,
-            tags: ["some", "tags", "would", "be", "here"],
-            title: "A Title",
-            usage_hint: "some usage hint",
-            license: "some license",
-            merged_from: "some model",
-            trigger_phrase: "some trigger phrase",
-        };
+            const result = model.Model.parse(input);
 
-        const result = model.Model.parse(input);
+            expect(result.date).toBeInstanceOf(UTCDate);
+            expect(result.date?.toISOString()).toStrictEqual("2025-03-19T17:11:29.000Z");
 
-        expect(result.date).toBeInstanceOf(UTCDate);
-        expect(result.date?.toISOString()).toStrictEqual("2025-03-19T17:11:29.000Z");
-
-        expect(result.id).toStrictEqual("something");
-    });
-
-    describe("model", (test) => {
-        test("fully qualified model", async ({ expect }) => {
-            const client = new SwarmUIClient();
-            await client.getNewSession();
-
-            expect(client.session?.session_id).toMatch(/^[0-9a-f]+$/i);
-
-            const result = await client.describeModel({
-                modelName: "il/smoothMixNoobai_noobai.safetensors",
-                subType: model.ModelType.enum.StableDiffusion,
-            });
-
-            if (result.success) {
-                const modelResult = model.Model.parse(result.result.model);
-                expect(modelResult).toMatchObject({
-                    date: expect.any(UTCDate),
-                });
-            } else {
-                throw new Error("result was not successful");
-            }
+            expect(result.id).toStrictEqual("something");
         });
-        test("test listAllModels", async ({ expect }) => {
-            const client = new SwarmUIClient();
-            await client.getNewSession();
 
-            const response = await client.listAllModels({ depth: 100, path: "/" });
-            
-            for (const [subtype, result] of Object.entries(response)) {
-                for (const file of result.files) {
-                    expect(() => {
-                        const parsedModel = model.Model.parse(file);
-                        expect(parsedModel.type).toStrictEqual(subtype);
-                    }).not.toThrow();
+        describe("model", (test) => {
+            test("fully qualified model", async ({ expect }) => {
+                const client = new SwarmUIClient();
+                await client.getNewSession();
 
+                expect(client.session?.session_id).toMatch(/^[0-9a-f]+$/i);
+
+                const result = await client.describeModel({
+                    modelName: "il/smoothMixNoobai_noobai.safetensors",
+                    subType: model.ModelType.enum.StableDiffusion,
+                });
+
+                if (result.success) {
+                    const modelResult = model.Model.parse(result.result.model);
+                    expect(modelResult).toMatchObject({
+                        date: expect.any(UTCDate),
+                    });
+                } else {
+                    throw new Error("result was not successful");
                 }
-            }
+            });
+            test("test listAllModels", async ({ expect }) => {
+                const client = new SwarmUIClient();
+                await client.getNewSession();
+
+                const response = await client.listAllModels({ depth: 100, path: "/" });
+
+                for (const [subtype, result] of Object.entries(response)) {
+                    for (const file of result.files) {
+                        expect(() => {
+                            const parsedModel = model.Model.parse(file);
+                            expect(parsedModel.type).toStrictEqual(subtype);
+                        }).not.toThrow();
+                    }
+                }
+            });
         });
     });
 });

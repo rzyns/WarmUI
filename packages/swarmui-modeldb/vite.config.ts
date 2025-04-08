@@ -1,11 +1,13 @@
 import wasm from "vite-plugin-wasm";
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite";
+
+const ALL_DEPENDENCIES = Object.keys(await import("./package.json").then((pkg) => pkg.dependencies));
 
 export default defineConfig({
     plugins: [wasm()],
 
     optimizeDeps: {
-        exclude: ["@electric-sql/pglite"],
+        exclude: ALL_DEPENDENCIES,
         holdUntilCrawlEnd: true,
     },
     experimental: {
@@ -13,9 +15,15 @@ export default defineConfig({
         skipSsrTransform: true,
     },
 
-    worker: { format: "es" },
+    worker: {
+        format: "es",
+    },
 
     build: {
+        commonjsOptions: {
+            ignoreDynamicRequires: true,
+            transformMixedEsModules: true,
+        },
         copyPublicDir: true,
         emptyOutDir: true,
         lib: {
@@ -25,11 +33,15 @@ export default defineConfig({
         },
         manifest: true,
         minify: false,
+        terserOptions: {
+            compress: false,
+            mangle: false,
+        },
         outDir: "dist",
         rollupOptions: {
-            external: Object.keys(await import("./package.json").then((pkg) => pkg.dependencies)),
-            cache: false,
-            treeshake: true,
+            external: ALL_DEPENDENCIES,
+            // cache: false,
+            // treeshake: true,
         },
         sourcemap: true,
         target: "esnext",

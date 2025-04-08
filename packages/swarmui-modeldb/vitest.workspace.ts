@@ -1,56 +1,40 @@
-import wasm from "vite-plugin-wasm";
-import { defineWorkspace } from "vitest/config";
+import { defineConfig, defineWorkspace, mergeConfig } from "vitest/config";
 
 export default defineWorkspace([
     {
         test: {
             // an example of file based convention,
             // you don't have to follow it
-            include: ["tests/unit/**/*.{test,spec}.ts", "tests/**/*.unit.{test,spec}.ts"],
+            include: ["src/**/*.{test,spec}.ts", "src/**/*.node.{test,spec}.ts"],
+
             name: "unit",
             environment: "node",
+            printConsoleTrace: true,
         },
     },
-    {
-        plugins: [wasm()],
-
-        optimizeDeps: {
-            exclude: ["@electric-sql/pglite"],
-        },
-
-        worker: { format: "es" },
-
-        build: {
-            outDir: "dist",
-            sourcemap: true,
-            minify: false,
-            lib: {
-                entry: "src/index.ts",
-                name: "swarmui-modeldb",
-                formats: ["es"],
-            },
-            rollupOptions: {
-                external: Object.keys(await import("./package.json").then((pkg) => pkg.dependencies)),
-            },
-        },
-
-        test: {
-            browser: {
-                enabled: true,
-                headless: true,
-                provider: "playwright",
-                // https://vitest.dev/guide/browser/playwright
-                instances: [
-                    {
-                        browser: "chromium",
-                        headless: true,
-                        viewport: {
-                            width: 1280,
-                            height: 720,
+    mergeConfig(
+        (await import("./vite.config.js")).default,
+        defineConfig({
+            test: {
+                include: ["src/**/*.{test,spec}.ts", "src/**/*.browser.{test,spec}.ts"],
+                name: "browser",
+                testTimeout: 20_000,
+                browser: {
+                    enabled: true,
+                    provider: "playwright",
+                    // https://vitest.dev/guide/browser/playwright
+                    instances: [
+                        {
+                            browser: "chromium",
+                            headless: true,
+                            viewport: {
+                                width: 1280,
+                                height: 720,
+                            },
                         },
-                    },
-                ],
+                    ],
+                },
             },
-        },
-    },
+        }),
+    ),
 ]);

@@ -1,11 +1,16 @@
 import { IdbFs, PGlite } from "@electric-sql/pglite";
+import { messages } from "@electric-sql/pglite";
 import { live } from "@electric-sql/pglite/live";
 import { PGliteWorker } from "@electric-sql/pglite/worker";
 import { drizzle } from "drizzle-orm/pglite";
-import migrations from "./migrations.json";
+import { DrizzleError, eq, sql } from "drizzle-orm";
+import { NodeFS } from "@electric-sql/pglite/nodefs";
+import Worker from "web-worker";
+
 import { SwarmUIClient } from "@rzyns/swarmui-client";
-import { modelsTable } from "./schema";
-import { Model } from "../../swarmui-client/dist/model";
+import * as schema from "./schema.js";
+import * as swarmui from "@rzyns/swarmui-client";
+import migrations from "./migrations.json";
 
 export const DB_URL = "idb://swarmui-modeldb" as const;
 export type DB_URL = typeof DB_URL;
@@ -13,19 +18,27 @@ export type DB_URL = typeof DB_URL;
 export type SwarmUiModelDb = Awaited<ReturnType<typeof init>>;
 
 export async function init() {
-    const client = await PGliteWorker.create(
-        new Worker(new URL("./pg-lite-worker.js?worker", import.meta.url), { type: "module" }),
-        {
-            fs: new IdbFs("warmui"),
+    let client: PGlite | PGliteWorker;
+    if (typeof window === "undefined") {
+        client = await PGlite.create({
+            fs: new NodeFS("warmui"),
             extensions: { live },
-        },
-    );
+        });
+    } else {
+        client = await PGliteWorker.create(
+            new Worker(new URL("./pg-lite-worker.js", import.meta.url), { type: "module" }),
+            {
+                fs: new IdbFs("warmui"),
+                extensions: { live },
+            },
+        );
+    }
 
     if (!client.ready) {
         await client.waitReady;
     }
 
-    return drizzle({ client: client as unknown as PGlite });
+    return drizzle({ client: client as unknown as PGlite, schema });
 }
 
 // export async function migrate(db: SwarmUiModelDb) {
@@ -100,24 +113,100 @@ export async function migrate(db: SwarmUiModelDb) {
     console.log("🎉 All migrations completed successfully");
 }
 
-export async function pull(db: SwarmUiModelDb, client_?: SwarmUIClient) {
-    const client = client_ ?? new SwarmUIClient();
+export type PullOptions = {
+    client?: SwarmUIClient,
+    limit?: number,
+};
+
+export async function pull(db: SwarmUiModelDb, opts: PullOptions = {}) {
+    const client = opts.client ?? new SwarmUIClient();
     await client.getNewSession();
+
     const result = await client.listAllModels({
         depth: 100,
         path: "/",
     });
 
-    for (const [subtype_, model] of Object.entries(result)) {
+    let count = 0;
+    let skipped = 0;
+
+    for (const [subtype_, value] of Object.entries(result)) {
         const subtype = subtype_ as keyof typeof result;
 
-        for (const file of model.files) {
-            const { id, name, description, createdAt } = file;
-            console.log(`Model ID: ${id}, Name: ${name}, Description: ${description}, Created At: ${createdAt}`);
+        for (const file of value.files) {
+            if (opts.limit && count >= opts.limit) {
+                console.log("Limit reached, stopping...");
+                break;
+            }
 
-            const hydratedModel = Model.parse(file);
+            const parsedModel = swarmui.model.Model.safeParse(file);
+            if (!parsedModel.success) {
+                console.error("Error parsing model:", parsedModel.error);
+                console.error("Model data:", file);
+                continue;
+            }
 
-            await db.insert(modelsTable).values([hydratedModel])
+            if (await addModel(parsedModel.data, db)) {
+                count++;
+            } else {
+                skipped++;
+            }
         }
+    }
+
+    return count;
+}
+
+async function addModel(model: swarmui.model.Model, db: SwarmUiModelDb) {
+    try {
+        await db.insert(schema.modelsTable).values(model);
+    } catch (e) {
+        const existing = await db.select().from(schema.modelsTable).where(eq(schema.modelsTable.id, model.id))!;
+
+        handleDatabaseError("modelsTable", e, existing, model);
+    }
+
+    try {
+        await db.insert(schema.modelsMetaTable).values({
+            ...model,
+            folder: model.folder,
+            model_id: model.id,
+        });
+    } catch (e) {
+        const existing = (db.query.modelsMetaTable.findFirst({
+        where: (modelsMetaTable, { and, eq }) =>
+            and(
+                eq(modelsMetaTable.folder, sql.placeholder("folder")),
+                eq(modelsMetaTable.model_id, model.id)
+            ),
+        }))!;
+
+        handleDatabaseError("modelsMetaTable", e, existing, model);
+    }
+
+    return true;
+}
+
+async function handleDatabaseError<A extends object, B extends object>(message: string, e: unknown, existing: A, current: B) {
+    if (e instanceof messages.DatabaseError && e.code === "23505") {
+        const diff = Object.entries(existing).reduce(
+            (acc, [key, value]) => {
+                if (existing[key as keyof typeof existing] !== value) {
+                    acc[key] = value;
+                }
+                return acc;
+            },
+            {} as Record<string, unknown>,
+        );
+
+        if (Object.keys(diff).length > 0) {
+            console.log("UH OH! Already exists, but with different values");
+            console.log("Existing:", existing);
+            console.log("Parsed:", current);
+            console.log("Diff:", diff);
+            throw e;
+        }
+    } else {
+        throw e;
     }
 }
